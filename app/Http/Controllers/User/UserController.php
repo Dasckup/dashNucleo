@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class UserController extends Controller
+{
+    public function show(){
+        $auth = Auth::user();
+         return view('pages.user.index', [
+             "auth" => $auth
+         ]);
+    }
+}
