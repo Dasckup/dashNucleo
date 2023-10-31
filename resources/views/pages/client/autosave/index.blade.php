@@ -24,6 +24,8 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-body" style=" overflow: auto; ">
+                                <a class="btn btn-success button-table-header" href={{route("client.intention.show")}}>Autores atendidos</a>
+
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                     <tr>
@@ -41,7 +43,7 @@
                                         ?>
                                             <tr>
                                                 <td class="text-center">
-                                                    <a href="{{route('client.intention.update', ['id'=>$client->id])}}" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
+                                                    <a data-bs-toggle="modal" data-bs-target="#<?=$client->id?>" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
                                                 </td>
                                                 <td>
                                                     {{$name != null? $name : "Não informado"}}
@@ -70,6 +72,33 @@
                                                 </td>
                                                 <td class="text-center">{{date("d/m/Y \á\s H:m", strtotime($client->created_at))}}</td>
                                             </tr>
+                                            <div class="modal fade" id="<?=$client->id?>" tabindex="-1" aria-labelledby="<?=$client->id?>" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Marcar autor como Atendido</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p style="font-size: 12px;">
+                                                                <span style="font-weight:500">Deseja marcar o autor(a)</span> <b>{{$name}}</b> <span style="font-weight:500">como atendido?</span>
+                                                            </p>
+                                                            <p style="font-size: 12px;font-weight:500">
+                                                                Após marcar o autor como atendido, você afirmar ter entrado em contato com o mesmo. Caso não tenha entrado em contato, o autor poderá reclamar sobre o atendimento.
+                                                            </p>
+                                                            <div>
+                                                                <form action="{{route('client.intention.update', ['id'=>$client->id])}}" method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="id" value="{{$client->id}}">
+                                                                    <textarea required placeholder="Escreva sua justificativa..." name="justification" class="form-control mb-3" id="justification" cols="30" rows="10"></textarea>
+                                                                    <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100">Marcar como atendido</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         @endforeach
                                     </tbody>
                                 </table>

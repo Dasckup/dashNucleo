@@ -31,8 +31,15 @@
                     <li class="nav-item hidden-on-mobile">
                         <a class="nav-link " href="https://dasckup.com">Projetos</a>
                     </li>
+
+
+
                     <li class="nav-item">
                         <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link ps-0" href="{{route("log")}}"><i class="material-icons">history</i></a>
                     </li>
 
                     <li class="nav-item hidden-on-mobile">
