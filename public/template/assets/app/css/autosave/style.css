@@ -72,9 +72,9 @@ a.view-history i{
     padding-right: 30px;
 }
 
-.timeline-list-item{
+.timeline-list-item {
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 26px;
     content: "";
 }
 
@@ -91,7 +91,11 @@ a.view-history i{
 }
 
 .timeline-list-item-obs{
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     margin: 0px;
+    width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
