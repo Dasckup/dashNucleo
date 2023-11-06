@@ -2,6 +2,18 @@
 
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+.button-table-header{
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px;
+    margin-bottom: 17px;
+}
+
+.btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/10px auto no-repeat;
+}
+</style>
 @endsection
 
 @section('js')
@@ -28,19 +40,19 @@
 
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
-                                    <tr>
-                                        <th class="text-center" style="width:10%">Atendido</th>
-                                        <th style="width:25%">Autor</th>
-                                        <th style="width:25%">E-mail</th>
-                                        <th style="width:25%">Celular</th>
-                                        <th class="text-center" style="width:15%">Data e Hora</th>
-                                    </tr>
+                                        <tr>
+                                            <th class="text-center" style="width:10%">Atendido</th>
+                                            <th style="width:25%">Autor</th>
+                                            <th style="width:25%">E-mail</th>
+                                            <th style="width:25%">Celular</th>
+                                            <th class="text-center" style="width:15%">Data e Hora</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($clients as $client)
-                                        <?php
-                                            $name = mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8");
-                                        ?>
+                                            <?php
+                                                $name = mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8");
+                                            ?>
                                             <tr>
                                                 <td class="text-center">
                                                     <a data-bs-toggle="modal" data-bs-target="#<?=$client->id?>" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
@@ -62,7 +74,7 @@
                                                     <div class="d-flex align-items-center">
                                                         {{$client->cellphone != null? $client->ddi." ".$client->cellphone : "Não informado"}}
                                                         @if(preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->cellphone))
-                                                            <a target="_BLANK" class="d-flex align-items-center ms-1" style="text-decoration: none" href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $client->cellphone)?>?text=Ol%C3%A1+{{$name}}%2C+tudo+bem%3F">
+                                                            <a target="_BLANK" class="d-flex align-items-center ms-1" style="text-decoration: none" href="https://wa.me/<?= str_replace('+', '',$client->ddi)?><?= preg_replace('/[^0-9]/', '', $client->cellphone)?>?text=Ol%C3%A1+{{$name}}%2C+tudo+bem%3F">
                                                                 <span style="font-size: 20px;" class="material-symbols-outlined m-0">
                                                                     quick_phrases
                                                                 </span>

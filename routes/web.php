@@ -23,6 +23,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(Clients::class)->group(function () {
         Route::get('/submissoes', 'index')->name("client.index");
+
+        Route::get('/submissoes/pendente', 'index_pendente')->name("client.index.pendente");
+        Route::get('/submissoes/atendido', 'index_atendido')->name("client.index.atendido");
+        Route::get('/submissoes/pagas', 'index_pagas')->name("client.index.pagas");
+        Route::get('/submissoes/cancelados', 'index_cancelados')->name("client.index.cancelados");
+
         Route::get('/submissoes/{id}/{status}', 'update')->name("client.update");
         Route::get('/submissoes/{id}/', 'show')->name("client.show");
     });

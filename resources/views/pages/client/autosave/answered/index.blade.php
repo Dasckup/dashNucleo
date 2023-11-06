@@ -2,6 +2,19 @@
 
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+    .button-table-header{
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px;
+    margin-bottom: 17px;
+}
+
+.btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/10px auto no-repeat;
+}
+
+</style>
 @endsection
 
 @section('js')
@@ -38,9 +51,9 @@
                                     </thead>
                                     <tbody>
                                         @foreach($clients as $client)
-                                        <?php
-                                            $name = mb_convert_case($client->information->name, MB_CASE_TITLE, "UTF-8");
-                                        ?>
+                                            <?php
+                                                $name = mb_convert_case($client->information->name, MB_CASE_TITLE, "UTF-8");
+                                            ?>
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
@@ -67,7 +80,7 @@
                                                         {{$client->information->cellphone != null? $client->information->ddi." ".$client->information->cellphone : "Não informado"}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">{{date("d/m/Y \á\s H:m", strtotime($client->information->created_at))}}</td>
+                                                <td class="text-center">{{date("d/m/Y \á\s H:m", strtotime($client->created_at))}}</td>
                                             </tr>
 
 

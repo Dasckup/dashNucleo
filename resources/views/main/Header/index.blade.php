@@ -47,19 +47,19 @@
                         <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
                             <h6 class="dropdown-header">Notificações</h6>
                             <div class="notifications-dropdown-list">
-{{--                        <a href="#">--}}
-{{--                            <div class="notifications-dropdown-item">--}}
-{{--                                <div class="notifications-dropdown-item-image">--}}
-{{--                                    <span class="notifications-badge">--}}
-{{--                                        <img src="{{asset("template/assets/images/avatars/avatar.png")}}" alt="">--}}
-{{--                                    </span>--}}
-{{--                                </div>--}}
-{{--                                <div class="notifications-dropdown-item-text">--}}
-{{--                                    <p>Praesent lacinia ante eget tristique mattis. Nam sollicitudin velit sit amet auctor porta</p>--}}
-{{--                                    <small>yesterday</small>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </a>--}}
+                                {{--<a href="#">--}}
+                                {{--    <div class="notifications-dropdown-item">--}}
+                                {{--        <div class="notifications-dropdown-item-image">--}}
+                                {{--            <span class="notifications-badge">--}}
+                                {{--                <img src="{{asset("template/assets/images/avatars/avatar.png")}}" alt="">--}}
+                                {{--            </span>--}}
+                                {{--        </div>--}}
+                                {{--        <div class="notifications-dropdown-item-text">--}}
+                                {{--            <p>Praesent lacinia ante eget tristique mattis. Nam sollicitudin velit sit amet auctor porta</p>--}}
+                                {{--            <small>yesterday</small>--}}
+                                {{--        </div>--}}
+                                {{--    </div>--}}
+                                {{--</a>--}}
 
                                 <div class="w-100 d-flex" style="min-height: 300px">
 
@@ -99,13 +99,27 @@
                 </a>
             </li>
 
-            <li class="{{ request()->is('submissoes') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('submissoes') ? 'active' : '' }}" href="{{route("client.index")}}">Submisssões</a>
+            <li class="{{ request()->is('intencao-de-submissao') ? 'active-page' : '' }}">
+                <a class="" href="{{route("client.intention.index")}}">Intenção de Submissão</a>
             </li>
 
-            <li class="{{ request()->is('intencao-de-submissao') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('intencao-de-submissao') ? 'active' : '' }}" href="{{route("client.intention.index")}}">Intenção de Submissão</a>
+            <li class="{{ request()->is('submissoes/pendentes') ? 'active-page' : '' }}">
+                <a class="{{ request()->is('submissoes/pendentes') ? 'active-page' : '' }} text-warning" href="{{route("client.index.pendente")}}">Pendentes</a>
             </li>
+
+            <li class="{{ request()->is('submissoes/antendidos') ? 'active-page' : '' }}">
+                <a class="{{ request()->is('submissoes/antendidos') ? 'active-page' : '' }} text-info" href="{{route("client.index.atendido")}}">Atendidos</a>
+            </li>
+
+            <li class="{{ request()->is('submissoes/pagas') ? 'active-page' : '' }}">
+                <a class="{{ request()->is('submissoes/pagas') ? 'active-page' : '' }} text-success" href="{{route("client.index.pagas")}}">Pagas</a>
+            </li>
+
+            <li class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }}">
+                <a class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }} text-danger" href="{{route("client.index.cancelados")}}">Canceladas</a>
+            </li>
+
+
 
             <li class="{{ request()->is('perfil') ? 'active-page' : '' }}">
                 <a class="{{ request()->is('perfil') ? 'active' : '' }}" href="#">Perfil  <i class="material-icons has-sub-menu">keyboard_arrow_down</i></a>

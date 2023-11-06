@@ -31,8 +31,8 @@ class AutoSaveController extends Controller
         $clients = ClientsFromAutoSave::where("id" , $id)->where("status", "intention")->first();
 
         if($clients){
-//            $clients->status = "is client";
-//            $clients->save();
+            $clients->status = "is client";
+            $clients->save();
 
             $clientsSaved = new AnsweredClientsFromAutosave();
             $clientsSaved->client = $id;

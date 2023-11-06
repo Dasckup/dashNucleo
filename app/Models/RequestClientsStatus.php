@@ -9,4 +9,8 @@ class RequestClientsStatus extends Model
 {
     use HasFactory;
     protected $table = "requests_clients_status";
+
+    public function clients(){
+        return $this->hasOne(RequestsClients::class, "id", "client")->with("submission")->with("status");
+    }
 }

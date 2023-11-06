@@ -54,7 +54,7 @@ class ClientsController extends Controller
             default:
                 $status = [
                     "status" => "atendido",
-                    "bs" => "success"
+                    "bs" => "info"
                 ];
             break;
         }
@@ -86,6 +86,56 @@ class ClientsController extends Controller
 
         return view('pages.client.show', [
             "client" => $client
+        ]);
+    }
+
+
+    public function index_pendente(){
+
+        $clients = RequestClientsStatus::where("status", "pendente")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Pendentes",
+                "bg" => "warning"
+            ]
+        ]);
+    }
+    public function index_atendido(){
+
+        $clients = RequestClientsStatus::where("status", "atendido")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Atendidas",
+                "bg" => "info"
+            ]
+        ]);
+    }
+    public function index_pagas(){
+
+        $clients = RequestClientsStatus::where("status", "pago")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Pagas",
+                "bg" => "success"
+            ]
+        ]);
+    }
+    public function index_cancelados(){
+
+        $clients = RequestClientsStatus::where("status", "cancelado")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Canceladas",
+                "bg" => "danger"
+            ]
         ]);
     }
 }
