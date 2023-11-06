@@ -14,6 +14,10 @@ class AnsweredClientsFromAutosave extends Model
         return $this->hasOne(ClientsFromAutoSave::class, 'id' , 'client' );
     }
 
+    public function contacts(){
+        return $this->hasMany(ContactClientsFromAutoSave::class, "client", "id")->with("users");
+    }
+
     public function users(){
         return $this->hasOne(User::class, 'id', 'user');
     }

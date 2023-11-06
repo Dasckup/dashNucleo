@@ -152,7 +152,7 @@
                                                                 <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" method="POST">
                                                                     @csrf
                                                                     <textarea placeholder="Observação" name="obs" class="form-control mb-3" id="obs" cols="30" rows="10"></textarea>
-                                                                    <input required type="datetime-local" name="date" class="form-control mb-3" id="date">
+                                                                    <input value="<?= date('Y-m-d\TH:i'); ?>" required type="datetime-local" name="date" class="form-control mb-3" id="date">
                                                                     <select style="font-size:12px" required name="type_contact" id="type_contact" class="form-select mb-3">
                                                                         <option value="">Selecione</option>
                                                                         @foreach ($typesContact as $type)
@@ -217,7 +217,6 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
-
                                                                 @endif
 
                                                         </div>

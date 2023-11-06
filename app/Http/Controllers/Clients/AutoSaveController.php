@@ -21,7 +21,7 @@ class AutoSaveController extends Controller
     }
 
     public function show(){
-        $clients = AnsweredClientsFromAutosave::with("information")->with("users")->orderBy("id","DESC")->get();
+        $clients = AnsweredClientsFromAutosave::with("information")->with("contacts")->with("users")->orderBy("id","DESC")->get();
 
         return view('pages.client.autosave.answered.index', [
             'clients' => $clients
