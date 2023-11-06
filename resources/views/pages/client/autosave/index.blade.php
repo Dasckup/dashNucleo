@@ -2,6 +2,8 @@
 
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="{{asset("/template/assets/app/css/autosave/style.css")}}" />
+
 <style>
 .button-table-header{
     font-size: 12px;
@@ -21,6 +23,11 @@
 @endsection
 
 @section('content')
+
+<?php
+    $typesContact = App\Http\Middleware\TypesContact::get();
+?>
+
     <div class="app-content">
         <div class="content-wrapper">
             <div class="container">
@@ -41,11 +48,11 @@
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th style="display:none">id</th>
-                                            <th class="text-center" style="width:10%">Atendido</th>
-                                            <th style="width:30%">Autor</th>
-                                            <th style="width:30%">E-mail</th>
-                                            <th class="text-center" style="width:15%">Contatos</th>
+                                            <th class="d-none">id</th>
+                                            <th class="text-center" style="width:10%">Atendimento</th>
+                                            <th style="width:33%">Autor</th>
+                                            <th style="width:33%">E-mail</th>
+                                            <th class="text-center" style="width:8%">Finalizar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -55,11 +62,29 @@
                                                 $email = $client->email != null? $client->email : "Não informado";
                                             ?>
                                             <tr>
-                                                <td style="display:none">
+                                                <td class="d-none">
                                                     <?= $key ?>
                                                 </td>
-                                                <td class="text-center">
-                                                    <a data-bs-toggle="modal" data-bs-target="#<?=$client->id?>" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-3 options-contact">
+                                                            <a data-bs-toggle="modal" data-bs-target="#add-contact-<?=$client->id?>" class="add-contact">
+                                                                <i class="material-icons">add_circle</i>
+                                                            </a>
+                                                            <a data-bs-toggle="modal" data-bs-target="#history-contact-<?=$client->id?>" class="view-history">
+                                                                <i class="material-icons">history</i>
+                                                            </a>
+                                                        </div>
+
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <div>
+                                                                    <p class="m-0 title-row-in-table text-{{(count($client->contacts)<7)?"danger":"success"}} number-contact"><?=count($client->contacts)?></p>
+                                                                    <p style="font-weight:500" class="m-0 sub-title-row-in-table">Contatos</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <?=CreateRow($name != null? $name : "Não informado",date("d/m/Y \á\s H:m", strtotime($client->created_at)))?>
@@ -70,7 +95,7 @@
                                                             <div>
                                                                 <p class="m-0 text-black title-row-in-table d-flex">
                                                                     @if(preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $client->email))
-                                                                        <a class="d-flex align-items-center me-2" style="text-decoration: none" href="mailto:{{$client->email}}">
+                                                                        <a  class="d-flex align-items-center me-2" style="text-decoration: none" href="mailto:{{$client->email}}">
                                                                             <i style="font-size: 15px;" class="material-icons m-0">forward_to_inbox</i>
                                                                         </a>
                                                                     @else
@@ -100,12 +125,120 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-
-                                                    </div>
+                                                <td class="text-center">
+                                                    <a data-bs-toggle="modal" data-bs-target="#<?=$client->id?>" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
                                                 </td>
                                             </tr>
+
+
+
+
+
+
+
+
+                                            <div class="modal fade" id="add-contact-<?=$client->id?>" tabindex="-1" aria-labelledby="add-contact-<?=$client->id?>" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Salvar contato</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p style="font-size: 12px;">
+                                                                <span style="font-weight:500">Deseja salvar {{(count($client->contacts)==0)?"seu primeiro":"o ".(count($client->contacts)+1)."º"}} contato feito com </span> <b>{{$name}}</b> ?</span>
+                                                            </p>
+                                                            <div>
+                                                                <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" method="POST">
+                                                                    @csrf
+                                                                    <textarea placeholder="Observação" name="obs" class="form-control mb-3" id="obs" cols="30" rows="10"></textarea>
+                                                                    <input required type="datetime-local" name="date" class="form-control mb-3" id="date">
+                                                                    <select style="font-size:12px" required name="type_contact" id="type_contact" class="form-select mb-3">
+                                                                        <option value="">Selecione</option>
+                                                                        @foreach ($typesContact as $type)
+                                                                            <option value="{{$type->id}}">{{$type->label}}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100">Salvar contato</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <div class="modal fade" id="history-contact-<?=$client->id?>" tabindex="-1" aria-labelledby="history-contact-<?=$client->id?>" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Historico de contato</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p style="font-size: 12px;">
+                                                                <span style="font-weight:500">Esses são os todos os contatos feito com </span> <b>{{$name}}</b></span>
+                                                            </p>
+
+                                                                @if(count($client->contacts)==0)
+
+                                                                <div class="w-100">
+                                                                    <div class="contact-notFound">
+                                                                        Nenhum contato feito <b class="ms-1">{{$name}}</b>
+                                                                    </div>
+                                                                </div>
+
+                                                                @else
+
+                                                                <div class="w-100 d-flex flex-row position-relative" style="min-height: 150px">
+                                                                    <div class="bar-timeline"></div>
+                                                                    <div class="timeline">
+                                                                        <ul class="timeline-list">
+                                                                            @foreach ($client->contacts as $contact)
+                                                                                <li class="timeline-list-item">
+                                                                                    <p class="timeline-list-item-obs">{{$contact->observation}}</p>
+                                                                                    <div class="d-flex w-100 justify-content-between">
+                                                                                        <div>{{$contact->users->name}}</div>
+                                                                                        <div>{{date("d/m/Y \á\s H:i", strtotime($contact->date))}}</div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+
+                                                                @endif
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -135,6 +268,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
 
                                         @endforeach
                                     </tbody>

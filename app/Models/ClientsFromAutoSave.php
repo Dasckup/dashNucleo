@@ -15,4 +15,12 @@ class ClientsFromAutoSave extends Model
     protected $casts = [
         "id" => "string",
     ];
+
+    public function contacts(){
+        return $this->hasMany(ContactClientsFromAutoSave::class, "client", "id")->with("users");
+    }
+
+    public function users(){
+        return $this->hasOne(User::class, 'id', 'user');
+    }
 }

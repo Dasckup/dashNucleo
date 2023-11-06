@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Clients;
 
 use App\Http\Controllers\Controller;
 use App\Models\AnsweredClientsFromAutosave;
+use App\Models\ContactClientsFromAutoSave;
 use App\Models\ClientsFromAutoSave;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,7 @@ class AutoSaveController extends Controller
 {
 
     public function index(){
-        $clients = ClientsFromAutoSave::where("status", "intention")->orderBy("created_at","ASC")->get();
+        $clients = ClientsFromAutoSave::where("status", "intention")->with("contacts")->orderBy("created_at","ASC")->get();
 
         return view('pages.client.autosave.index', [
             "clients" => $clients
@@ -44,5 +45,21 @@ class AutoSaveController extends Controller
         return redirect()->back();
     }
 
+
+    public function updateContact(Request $request, $id){
+        $clients = ClientsFromAutoSave::where("id" , $id)->where("status", "intention")->first();
+
+        if($clients){
+            $clientsSaved = new ContactClientsFromAutoSave();
+            $clientsSaved->user = Auth::user()->id;
+            $clientsSaved->client = $id;
+            $clientsSaved->type = $request->type_contact;
+            $clientsSaved->observation = $request->obs;
+            $clientsSaved->date = $request->date;
+            $clientsSaved->save();
+        }
+
+        return redirect()->back();
+    }
 
 }

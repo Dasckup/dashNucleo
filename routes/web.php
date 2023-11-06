@@ -38,6 +38,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/intencao-de-submissao', 'index')->name("client.intention.index");
         Route::get('/intencao-de-submissao/atendidos', 'show')->name("client.intention.show");
         Route::post('/intencao-de-submissao/is-client/{id}', 'update')->name("client.intention.update");
+        Route::post('/intencao-de-submissao/contact/{id}', 'updateContact')->name("client.intention.update.contact");
+
     });
 
     Route::controller(Users::class)->group(function (){

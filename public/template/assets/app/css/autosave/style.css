@@ -1,0 +1,97 @@
+a.add-contact{
+    color: #717171;
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+a.add-contact i{
+    font-size: 24px
+}
+
+a.add-contact:hover{
+    color: #48d144;
+}
+
+
+a.view-history{
+    color: #717171;
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+    margin-bottom: -7px;
+}
+
+a.view-history:hover{
+    color: #44a9d1;
+}
+
+a.view-history i{
+    font-size: 24px
+}
+
+.options-contact{
+    margin: -5px;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.number-contact{
+    font-size:16px!important;
+    line-height: 19px;
+}
+
+
+.contact-notFound{
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.bar-timeline{
+    height: 100%;
+    width: 2px;
+    background-color: #2fc92f;
+    margin-bottom: 10px;
+    position: absolute;
+}
+
+.timeline{
+    width: 100%;
+}
+
+.timeline-list {
+    list-style: none;
+    padding: 0px;
+    font-size: 12px;
+    width: 100%;
+    margin-left: 20px;
+    padding-right: 30px;
+}
+
+.timeline-list-item{
+    width: 100%;
+    margin-bottom: 15px;
+    content: "";
+}
+
+.timeline-list-item::before{
+    content: "";
+    width: 18px;
+    height: 18px;
+    background: #2fc92f;
+    border: 3px solid #fff;
+    border-radius: 100%;
+    position: absolute;
+    left: -8px;
+    margin-top: 10px;
+}
+
+.timeline-list-item-obs{
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0px;
+}
