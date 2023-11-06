@@ -12,7 +12,7 @@ class AutoSaveController extends Controller
 {
 
     public function index(){
-        $clients = ClientsFromAutoSave::where("status", "intention")->orderBy("id","DESC")->get();
+        $clients = ClientsFromAutoSave::where("status", "intention")->orderBy("created_at","ASC")->get();
 
         return view('pages.client.autosave.index', [
             "clients" => $clients

@@ -41,6 +41,7 @@
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                         <tr>
+                                            <th style="display:none">id</th>
                                             <th class="text-center" style="width:10%">Atendido</th>
                                             <th style="width:25%">Autor</th>
                                             <th style="width:25%">E-mail</th>
@@ -49,11 +50,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($clients as $client)
+                                        @foreach($clients as $key => $client)
                                             <?php
                                                 $name = mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8");
                                             ?>
                                             <tr>
+                                                <td style="display:none">
+                                                    <?= $key ?>
+                                                </td>
                                                 <td class="text-center">
                                                     <a data-bs-toggle="modal" data-bs-target="#<?=$client->id?>" class="btn btn-success btn-style-light ps-3 pe-3" style="width:fit-content"><i style="font-size: 18px;" class="material-icons m-0">done</i></a>
                                                 </td>

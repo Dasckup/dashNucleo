@@ -40,7 +40,6 @@
                                             <?php
                                               $client = $reponse->clients;
                                             ?>
-
                                         <tr>
                                             <td class="d-none">{{$client->id}}</td>
                                             <td class="text-center">
