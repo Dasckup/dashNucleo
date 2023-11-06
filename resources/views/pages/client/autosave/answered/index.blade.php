@@ -37,22 +37,22 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-body" style=" overflow: auto; ">
-                                <a class="btn btn-danger button-table-header" href={{route("client.intention.index")}}>Autores não atendidos</a>
+                                <a class="btn btn-danger button-table-header" href={{route("client.intention.index")}}>Atendimentos não finalizados</a>
 
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                     <tr>
                                         <th class="text-center" style="width:15%">Atendido por</th>
-                                        <th style="width:23%">Autor</th>
+                                        <th style="width:25%">Autor</th>
                                         <th style="width:25%">E-mail</th>
-                                        <th style="width:17%">Celular</th>
-                                        <th class="text-center" style="width:15%">Data e Hora</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($clients as $client)
                                             <?php
                                                 $name = mb_convert_case($client->information->name, MB_CASE_TITLE, "UTF-8");
+                                                $email = $client->information->email != null? $client->information->email : "Não informado";
+                                                $celular = $client->information->cellphone != null? $client->information->ddi." ".$client->information->cellphone : "Não informado";
                                             ?>
                                             <tr>
                                                 <td>
@@ -62,25 +62,15 @@
                                                                 <i style="font-size: 23px;" class="material-icons m-0">info</i>
                                                             </a>
                                                         </div>
-                                                        <div>
-                                                            {{$client->users->name}}
-                                                        </div>
+                                                        <?=CreateRow($client->users->name,date("d/m/Y \á\s H:m", strtotime($client->created_at)))?>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    {{$name != null? $name : "Não informado"}}
+                                                    <?=CreateRow($name != null? $name : "Não informado",date("d/m/Y \á\s H:m", strtotime($client->information->created_at)))?>
                                                 </td>
                                                 <td>
-                                                    <div class="d-flex align-items-center">
-                                                        {{$client->information->email != null? $client->information->email : "Não informado"}}
-                                                    </div>
+                                                    <?=CreateRow($email,$celular)?>
                                                 </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        {{$client->information->cellphone != null? $client->information->ddi." ".$client->information->cellphone : "Não informado"}}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">{{date("d/m/Y \á\s H:m", strtotime($client->created_at))}}</td>
                                             </tr>
 
 
@@ -106,9 +96,6 @@
                                                 </div>
                                             </div>
 
-
-
-
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -120,3 +107,21 @@
         </div>
     </div>
 @endsection
+
+<?php
+
+function CreateRow($data1,$data2){
+    return (
+        '
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center">
+                <div>
+                    <p class="m-0 text-black title-row-in-table">'.$data1.'</p>
+                    <p style="font-weight:500" class="m-0 sub-title-row-in-table">'.$data2.'</p>
+                </div>
+            </div>
+        </div>
+        '
+    );
+}
+?>
