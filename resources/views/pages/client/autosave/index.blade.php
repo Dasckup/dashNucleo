@@ -32,6 +32,9 @@
 .timeline-list-item {
     margin-left: 5px;
 }
+#relatorio-atendidos{
+    display: none;
+}
 </style>
 @endsection
 
@@ -126,11 +129,17 @@
         }
 
         function AddContact(element, metadata){
-            console.log(metadata);
             const el = $("#number-contact-from-"+element);
             const quantContact = parseInt(el.text());
 
             if((quantContact+1) > 0){
+
+                const not_contacted = $("#not-contacted");
+                const contacted = $("#contacted");
+
+                not_contacted.text(parseInt(not_contacted.text())-1);
+                contacted.text(parseInt(contacted.text())+1);
+
                 $("#no-contact-with-"+element).addClass("d-none");
                 $("#no-contact-with-"+element).removeClass("d-flex");
                 $("#contact-with-"+element).removeClass("d-none");
@@ -179,10 +188,72 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-sm-12 d-flex">
+                        <div class="me-2">
+                            <a class="btn btn-success button-table-header" href={{route("client.intention.show")}}>Atendimentos finalizados</a>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-info button-table-header" onclick="$('#relatorio-atendidos').fadeToggle()">Progresso de atendimento <i class="material-symbols-outlined ms-1" style=" font-size: 16px; margin-bottom: -10px; ">expand_more</i></button>
+                        </div>
+                    </div>
+                    <div class="col-sm-12" id="relatorio-atendidos">
+                        <div class="row" >
+                            <div class="col-xl-6 ">
+                                <div class="card widget widget-stats">
+                                    <div class="card-body">
+                                        <div class="widget-stats-container d-flex">
+                                            <div class="widget-stats-icon widget-stats-icon-danger">
+                                                <i class="material-icons-outlined">phone_disabled</i>
+                                            </div>
+                                            <div class="widget-stats-content flex-fill">
+                                                <span class="widget-stats-title">Não atendidos</span>
+                                                <span class="widget-stats-amount" id="not-contacted">
+                                                    <?php
+                                                    $clientesSemContato = array_filter(json_decode(json_encode($clients), true), function ($cliente) {
+                                                        return count($cliente['contacts']) === 0;
+                                                    });
+
+                                                    $countSemContato = count($clientesSemContato);
+                                                    echo $countSemContato;
+                                                    ?>
+                                                </span>
+                                                <span class="widget-stats-info">Submissões</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6">
+                                <div class="card widget widget-stats">
+                                    <div class="card-body">
+                                        <div class="widget-stats-container d-flex">
+                                            <div class="widget-stats-icon widget-stats-icon-success">
+                                                <i class="material-icons-outlined">phone_enabled</i>
+                                            </div>
+                                            <div class="widget-stats-content flex-fill">
+                                                <span class="widget-stats-title">Atendidos</span>
+                                                <span class="widget-stats-amount" id="contacted">
+                                                    <?php
+                                                    $clientesComContato = array_filter(json_decode(json_encode($clients), true), function ($cliente) {
+                                                        return count($cliente['contacts']) > 0;
+                                                    });
+
+                                                    $countComContato = count($clientesComContato);
+                                                    echo $countComContato;
+                                                    ?>
+                                                </span>
+                                                <span class="widget-stats-info">Submissões</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col">
                         <div class="card">
                             <div class="card-body" style=" overflow: auto; ">
-                                <a class="btn btn-success button-table-header" href={{route("client.intention.show")}}>Atendimentos finalizados</a>
 
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
