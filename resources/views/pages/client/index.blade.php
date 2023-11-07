@@ -71,7 +71,11 @@
                                                 <div class="d-flex align-items-center">
                                                     <div>
                                                         <p class="m-0  text-black title-row-in-table">{{$client->name}} {{$client->last_name}}</p>
+                                                        @if($client->submission->find_us!=="outro")
                                                         <p style="font-weight:500" class="m-0 sub-title-row-in-table">@if(isset($client->submission)){{$client->submission->find_us}}@endif</p>
+                                                        @else
+                                                        <p style="font-weight:500" class="m-0 sub-title-row-in-table">@if(isset($client->submission)){{$client->submission->outer_find_us}}@endif</p>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>

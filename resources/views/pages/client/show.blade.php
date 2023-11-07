@@ -93,32 +93,18 @@
                                         </a>
                                    @endif
 
-                                    @if(isset($client->address->zipcode)&&!empty($client->address->zipcode))
-                                        <div class="row m-b-xxl">
-                                            <div class="col-sm-4">
-                                                <label class="form-label">CEP</label>
-                                                <input readonly type="text" value="{{$client->address->zipcode}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                            </div>
-                                        </div>
-                                    @elseif(isset($client->address->country))
+
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-4">
                                             <label class="form-label">País</label>
                                             <input readonly type="text" value="{{$client->address->country}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
                                         </div>
+                                        <div class="col-sm-4">
+                                            <label class="form-label">CEP/Zipcode</label>
+                                            <input readonly type="text" value="{{$client->address->zipcode}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        </div>
                                     </div>
-                                    @endif
 
-                                    <div class="row m-b-xxl">
-                                        <div class="col-sm-6">
-                                            <label  class="form-label">Cidade</label>
-                                            <input readonly type="text" value="{{$client->address->city}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <label  class="form-label">Estado</label>
-                                            <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                        </div>
-                                    </div>
 
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-5">
@@ -143,6 +129,17 @@
                                     </div>
 
 
+                                    <div class="row m-b-xxl">
+                                        <div class="col-sm-6">
+                                            <label  class="form-label">Cidade</label>
+                                            <input readonly type="text" value="{{$client->address->city}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label  class="form-label">Estado</label>
+                                            <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        </div>
+                                    </div>
+
 
 
                                 </div>
@@ -160,7 +157,11 @@
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-5">
                                             <label  class="form-label">Onde {{$client->name}} encontrou a revista:</label>
+                                            @if($client->submission->find_us!=="outro")
                                             <input readonly type="text" value="{{$client->submission->find_us}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            @else
+                                            <input readonly type="text" value="{{$client->submission->outer_find_us}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="row m-b-xxl">

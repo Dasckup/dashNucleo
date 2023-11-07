@@ -18,6 +18,20 @@
 .timeline-list-item-obs {
     font-size: 13px!important;
 }
+.timeline-list-item::before {
+    left: -3px!important;
+}
+.displayTimeline{
+    max-height: 500px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+.bar-timeline {
+    margin-left: 5px!important
+}
+.timeline-list-item {
+    margin-left: 5px;
+}
 </style>
 @endsection
 
@@ -26,11 +40,93 @@
 
     <script>
 
+        function validarData(data) {
+            const anoLimite = 2023;
+            const dataAtual = new Date();
+
+            if (isNaN(data.getTime())) {
+                return false;
+            }
+
+            if (data > dataAtual || data.getFullYear() < anoLimite - 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+
         function NewContact(e, element){
             e.preventDefault();
 
-            console.log(e.target);
-return ;
+            const obs = e.target.obs;
+            const date = e.target.date;
+            const type_contact = e.target.type_contact;
+            const button = $("#saveIt-client-"+element);
+            const action = e.target.action;
+            const token = e.target._token.value;
+            const auth = {{\Illuminate\Support\Facades\Auth::user()["id"]}}
+
+            obs.classList.remove("is-invalid");
+            date.classList.remove("is-invalid");
+            type_contact.classList.remove("is-invalid");
+
+
+            if(obs.value.length < 10){
+                obs.classList.add("is-invalid");
+                return ;
+            }
+
+            if(!validarData(new Date(date.value))){
+                date.classList.add("is-invalid");
+                return ;
+            }
+
+            if(type_contact.value.length < 1){
+                type_contact.classList.add("is-invalid");
+                return ;
+            }
+
+            button.prop("disabled", true);
+            button.html("Por favor aguarde...");
+
+            $.ajax({
+                url: action,
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': token
+                },
+                data: {
+                    obs: obs.value,
+                    date: date.value,
+                    type_contact: type_contact.value,
+                    user:auth
+                },
+                success: function (data) {
+                    if(data.status == "success"){
+                        AddContact(element, data.metadata);
+                        obs.value = "";
+
+                        button.prop("disabled", false);
+                        button.html("Salvar contato");
+
+                    }else{
+                        alert("Algo deu errado :(");
+                        button.prop("disabled", false);
+                        button.html("Salvar contato");
+                    }
+                },
+                error: function (data) {
+                    alert("Algo deu errado :(");
+                    button.prop("disabled", false);
+                    button.html("Salvar contato");
+                }
+            });
+
+        }
+
+        function AddContact(element, metadata){
+            console.log(metadata);
             const el = $("#number-contact-from-"+element);
             const quantContact = parseInt(el.text());
 
@@ -53,14 +149,13 @@ return ;
             const timeline = $("#timeline-from-"+element+" ul.timeline-list");
             timeline.append(
                 '<li class="timeline-list-item">'+
-                    '<p class="timeline-list-item-obs">Atendimento '+(quantContact+1)+'</p>'+
+                    '<p class="timeline-list-item-obs">'+metadata.message+'</p>'+
                     '<div class="d-flex w-100 justify-content-between">'+
-                        '<div>Nome do atendente</div>'+
-                        '<div>00/00/0000 ás 00:00</div>'+
+                        '<div>'+metadata.user+'</div>'+
+                        '<div>'+metadata.date+'</div>'+
                     '</div>'+
                 '</li>'
             );
-
         }
 
     </script>
@@ -193,7 +288,7 @@ return ;
                                                                 <span style="font-weight:500">Deseja salvar {{(count($client->contacts)==0)?"seu primeiro":"o ".(count($client->contacts)+1)."º"}} contato feito com </span> <b>{{$name}}</b> ?</span>
                                                             </p>
                                                             <div>
-                                                                <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" onsubmit="NewContact(event, {{$client->id}})" method="POST">
+                                                                <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" onsubmit="NewContact(event, '{{$client->id}}')" method="POST">
                                                                     @csrf
                                                                     <textarea placeholder="Observação" required name="obs" class="form-control mb-3" id="obs" cols="30" rows="3"></textarea>
                                                                     <input value="<?= date('Y-m-d\TH:i'); ?>" required type="datetime-local" name="date" class="form-control mb-3" id="date">
@@ -203,7 +298,7 @@ return ;
                                                                             <option value="{{$type->id}}">{{$type->label}}</option>
                                                                         @endforeach
                                                                     </select>
-                                                                     <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100">Salvar contato</button>
+                                                                     <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100" id="saveIt-client-{{$client->id}}">Salvar contato</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -243,23 +338,24 @@ return ;
                                                                 </div>
 
 
-                                                                <div id="contact-with-{{$client->id}}" class="w-100 {{count($client->contacts)!=0?"d-flex":"d-none"}} flex-row position-relative" style="min-height: 150px">
-                                                                    <div class="bar-timeline"></div>
-                                                                    <div class="timeline" id="timeline-from-{{$client->id}}">
-                                                                        <ul class="timeline-list">
-                                                                            @foreach ($client->contacts as $contact)
-                                                                                <li class="timeline-list-item">
-                                                                                    <p class="timeline-list-item-obs">{{$contact->observation}}</p>
-                                                                                    <div class="d-flex w-100 justify-content-between">
-                                                                                        <div>{{$contact->users->name}}</div>
-                                                                                        <div>{{date("d/m/Y \á\s H:i", strtotime($contact->date))}}</div>
-                                                                                    </div>
-                                                                                </li>
-                                                                            @endforeach
-                                                                        </ul>
+                                                                <div class="displayTimeline">
+                                                                    <div id="contact-with-{{$client->id}}" class="w-100  {{count($client->contacts)!=0?"d-flex":"d-none"}} flex-row position-relative" style="min-height: 150px">
+                                                                        <div class="bar-timeline"></div>
+                                                                        <div class="timeline" id="timeline-from-{{$client->id}}">
+                                                                            <ul class="timeline-list">
+                                                                                @foreach ($client->contacts as $contact)
+                                                                                    <li class="timeline-list-item">
+                                                                                        <p class="timeline-list-item-obs">{{$contact->observation}}</p>
+                                                                                        <div class="d-flex w-100 justify-content-between">
+                                                                                            <div>{{$contact->users->name}}</div>
+                                                                                            <div>{{date("d/m/Y \á\s H:i", strtotime($contact->date))}}</div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                @endforeach
+                                                                            </ul>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
