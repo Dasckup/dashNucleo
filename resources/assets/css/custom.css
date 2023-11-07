@@ -1,5 +1,9 @@
 /* Your Custom CSS Goes here */
 
+::placeholder {
+    font-size: 12px;
+}
+
 .app-header .language-dropdown-toggle img{
     height: 40px;
     width: 40px;

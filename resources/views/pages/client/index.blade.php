@@ -1,6 +1,8 @@
 @extends('main._index')
 
 @section('css')
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
 @endsection
 
 @section('js')
@@ -39,6 +41,8 @@
                                         @foreach($data as $reponse)
                                             <?php
                                               $client = $reponse->clients;
+                                              $name = mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8");
+                                              $email = $client->email != null? $client->email : "Não informado";
                                             ?>
                                         <tr>
                                             <td class="d-none">{{$client->id}}</td>
@@ -91,8 +95,36 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div>
-                                                        <p class="m-0 text-black title-row-in-table">{{$client->email}}</p>
-                                                        <p style="font-weight:500" class="m-0 sub-title-row-in-table">{{$client->ddi}} {{$client->cellphone}}</p>
+                                                        <p class="m-0 text-black title-row-in-table d-flex">
+                                                            @if(preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $client->email))
+                                                                <a  class="d-flex align-items-center me-2" style="text-decoration: none" href="mailto:{{$client->email}}">
+                                                                    <i style="font-size: 15px;" class="material-icons m-0">forward_to_inbox</i>
+                                                                </a>
+                                                            @else
+                                                                <a class="d-flex align-items-center text-grey me-2" style="text-decoration: none;color:#b3b3b3">
+                                                                    <i style="font-size: 15px;" class="material-icons m-0">forward_to_inbox</i>
+                                                                </a>
+                                                            @endif
+                                                            <span>{{$client->email}}</span>
+                                                        </p>
+
+
+                                                        <p style="font-weight:500" class="m-0 sub-title-row-in-table d-flex">
+                                                            @if(preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->cellphone))
+                                                                <a target="_BLANK" class="d-flex align-items-center me-1" style="text-decoration: none" href="https://wa.me/<?= str_replace('+', '',$client->ddi)?><?= preg_replace('/[^0-9]/', '', $client->cellphone)?>?text=Ol%C3%A1+{{$name}}%2C+tudo+bem%3F">
+                                                                    <span style="font-size: 15px;" class="material-symbols-outlined m-0">
+                                                                        quick_phrases
+                                                                    </span>
+                                                                </a>
+                                                            @else
+                                                                <a class="d-flex align-items-center text-grey me-2" style="text-decoration: none;color:#b3b3b3">
+                                                                    <span style="font-size: 15px;" class="material-symbols-outlined m-0 ">
+                                                                        quick_phrases
+                                                                    </span>
+                                                                </a>
+                                                            @endif
+                                                            <span>{{$client->ddi}} {{$client->cellphone}}</span>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>

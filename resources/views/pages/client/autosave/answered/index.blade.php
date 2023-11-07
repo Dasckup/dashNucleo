@@ -43,19 +43,24 @@
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                     <tr>
+                                        <th class="d-none">id</th>
                                         <th class="text-center" style="width:15%">Atendido por</th>
                                         <th style="width:25%">Autor</th>
                                         <th style="width:25%">E-mail</th>
+                                        <th class="text-center" style="width:10%">Contatos</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($clients as $client)
+                                        @foreach($clients as $key => $client)
                                             <?php
                                                 $name = mb_convert_case($client->information->name, MB_CASE_TITLE, "UTF-8");
                                                 $email = $client->information->email != null? $client->information->email : "Não informado";
                                                 $celular = $client->information->cellphone != null? $client->information->ddi." ".$client->information->cellphone : "Não informado";
                                             ?>
                                             <tr>
+                                                <td class="d-none">
+                                                    <?= $key ?>
+                                                </td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="me-3">
@@ -72,6 +77,24 @@
                                                 <td>
                                                     <?=CreateRow($email,$celular)?>
                                                 </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-3 options-contact">
+                                                            <a data-bs-toggle="modal" data-bs-target="#history-contact-<?=$client->information->id?>" class="view-history">
+                                                                <i class="material-icons">history</i>
+                                                            </a>
+                                                        </div>
+
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <div>
+                                                                    <p class="m-0 title-row-in-table text-black number-contact"><?=count($client->contacts)?></p>
+                                                                    <p style="font-weight:500" class="m-0 sub-title-row-in-table">Contatos</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                             </tr>
 
 
@@ -86,6 +109,9 @@
                                                             <p style="font-size: 12px;font-weight:500">
                                                                {{date("d/m/Y \á\s H:m", strtotime($client->information->created_at))}} até {{date("d/m/Y \á\s H:m", strtotime($client->created_at))}}
                                                                 <br />
+                                                                <br />
+                                                                Foram nescessário <b>{{count($client->contacts)}} contatos</b>
+                                                                <br />
                                                                 <br/>
                                                                 {{$client->observation}}
                                                                 <br />
@@ -97,9 +123,57 @@
                                                 </div>
                                             </div>
 
+
+
+                                            <div class="modal fade" id="history-contact-<?=$client->information->id?>" tabindex="-1" aria-labelledby="history-contact-<?=$client->information->id?>" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Historico de contato</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p style="font-size: 12px;">
+                                                                <span style="font-weight:500">Esses são os todos os contatos feito com </span> <b>{{$name}}</b></span>
+                                                            </p>
+
+                                                                @if(count($client->contacts)==0)
+                                                                    <div class="w-100">
+                                                                        <div class="contact-notFound">
+                                                                            Nenhum contato feito <b class="ms-1">{{$name}}</b>
+                                                                        </div>
+                                                                    </div>
+                                                                @else
+
+                                                                <div class="w-100 d-flex flex-row position-relative" style="min-height: 150px">
+                                                                    <div class="bar-timeline"></div>
+                                                                    <div class="timeline">
+                                                                        <ul class="timeline-list">
+                                                                            @foreach ($client->contacts as $contact)
+                                                                                <li class="timeline-list-item">
+                                                                                    <p class="timeline-list-item-obs">{{$contact->observation}}</p>
+                                                                                    <div class="d-flex w-100 justify-content-between">
+                                                                                        <div>{{$contact->users->name}}</div>
+                                                                                        <div>{{date("d/m/Y \á\s H:i", strtotime($contact->date))}}</div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                @endif
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
                                         @endforeach
                                     </tbody>
                                 </table>
+
+
                             </div>
                         </div>
                     </div>

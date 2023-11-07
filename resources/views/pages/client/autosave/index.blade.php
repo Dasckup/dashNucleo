@@ -15,18 +15,62 @@
 .btn-close {
     background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/10px auto no-repeat;
 }
+.timeline-list-item-obs {
+    font-size: 13px!important;
+}
 </style>
 @endsection
 
 @section('js')
     <script src="{{asset("/template/assets/js/datatables.js")}}"></script>
+
+    <script>
+
+        function NewContact(e, element){
+            e.preventDefault();
+
+            console.log(e.target);
+return ;
+            const el = $("#number-contact-from-"+element);
+            const quantContact = parseInt(el.text());
+
+            if((quantContact+1) > 0){
+                $("#no-contact-with-"+element).addClass("d-none");
+                $("#no-contact-with-"+element).removeClass("d-flex");
+                $("#contact-with-"+element).removeClass("d-none");
+                $("#contact-with-"+element).addClass("d-flex");
+            }
+
+            if((quantContact+1) === 7){
+                el.removeClass("text-danger");
+                el.addClass("text-success");
+            }
+
+            el.text(quantContact+1);
+
+            $("#add-contact-"+element).modal('hide');
+
+            const timeline = $("#timeline-from-"+element+" ul.timeline-list");
+            timeline.append(
+                '<li class="timeline-list-item">'+
+                    '<p class="timeline-list-item-obs">Atendimento '+(quantContact+1)+'</p>'+
+                    '<div class="d-flex w-100 justify-content-between">'+
+                        '<div>Nome do atendente</div>'+
+                        '<div>00/00/0000 ás 00:00</div>'+
+                    '</div>'+
+                '</li>'
+            );
+
+        }
+
+    </script>
 @endsection
 
 @section('content')
 
-<?php
-    $typesContact = App\Http\Middleware\TypesContact::get();
-?>
+    <?php
+        $typesContact = App\Http\Middleware\TypesContact::get();
+    ?>
 
     <div class="app-content">
         <div class="content-wrapper">
@@ -79,7 +123,7 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="d-flex align-items-center">
                                                                 <div>
-                                                                    <p class="m-0 title-row-in-table text-{{(count($client->contacts)<7)?"danger":"success"}} number-contact"><?=count($client->contacts)?></p>
+                                                                    <p class="m-0 title-row-in-table text-{{(count($client->contacts)<7)?"danger":"success"}} number-contact" id="number-contact-from-{{$client->id}}"><?=count($client->contacts)?></p>
                                                                     <p style="font-weight:500" class="m-0 sub-title-row-in-table">Contatos</p>
                                                                 </div>
                                                             </div>
@@ -149,9 +193,9 @@
                                                                 <span style="font-weight:500">Deseja salvar {{(count($client->contacts)==0)?"seu primeiro":"o ".(count($client->contacts)+1)."º"}} contato feito com </span> <b>{{$name}}</b> ?</span>
                                                             </p>
                                                             <div>
-                                                                <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" method="POST">
+                                                                <form action="{{route('client.intention.update.contact', ['id'=>$client->id])}}" onsubmit="NewContact(event, {{$client->id}})" method="POST">
                                                                     @csrf
-                                                                    <textarea placeholder="Observação" name="obs" class="form-control mb-3" id="obs" cols="30" rows="10"></textarea>
+                                                                    <textarea placeholder="Observação" required name="obs" class="form-control mb-3" id="obs" cols="30" rows="3"></textarea>
                                                                     <input value="<?= date('Y-m-d\TH:i'); ?>" required type="datetime-local" name="date" class="form-control mb-3" id="date">
                                                                     <select style="font-size:12px" required name="type_contact" id="type_contact" class="form-select mb-3">
                                                                         <option value="">Selecione</option>
@@ -159,7 +203,7 @@
                                                                             <option value="{{$type->id}}">{{$type->label}}</option>
                                                                         @endforeach
                                                                     </select>
-                                                                    <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100">Salvar contato</button>
+                                                                     <button style="font-size: 12px;font-weight:500" type="submit" class="btn btn-success w-100">Salvar contato</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -191,19 +235,17 @@
                                                                 <span style="font-weight:500">Esses são os todos os contatos feito com </span> <b>{{$name}}</b></span>
                                                             </p>
 
-                                                                @if(count($client->contacts)==0)
 
-                                                                <div class="w-100">
+                                                                <div id="no-contact-with-{{$client->id}}" class="w-100 {{count($client->contacts)==0?"d-flex":"d-none"}}">
                                                                     <div class="contact-notFound">
                                                                         Nenhum contato feito <b class="ms-1">{{$name}}</b>
                                                                     </div>
                                                                 </div>
 
-                                                                @else
 
-                                                                <div class="w-100 d-flex flex-row position-relative" style="min-height: 150px">
+                                                                <div id="contact-with-{{$client->id}}" class="w-100 {{count($client->contacts)!=0?"d-flex":"d-none"}} flex-row position-relative" style="min-height: 150px">
                                                                     <div class="bar-timeline"></div>
-                                                                    <div class="timeline">
+                                                                    <div class="timeline" id="timeline-from-{{$client->id}}">
                                                                         <ul class="timeline-list">
                                                                             @foreach ($client->contacts as $contact)
                                                                                 <li class="timeline-list-item">
@@ -217,7 +259,6 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
-                                                                @endif
 
                                                         </div>
                                                     </div>
@@ -256,7 +297,7 @@
                                                                 Após marcar o autor como atendido, você afirmar ter entrado em contato com o mesmo. Caso não tenha entrado em contato, o autor poderá reclamar sobre o atendimento.
                                                             </p>
                                                             <div>
-                                                                <form action="{{route('client.intention.update', ['id'=>$client->id])}}" method="POST">
+                                                                <form action="{{route('client.intention.update', ['id'=>$client->id])}}"  method="POST">
                                                                     @csrf
                                                                     <input type="hidden" name="id" value="{{$client->id}}">
                                                                     <textarea required placeholder="Escreva sua justificativa..." name="justification" class="form-control mb-3" id="justification" cols="30" rows="10"></textarea>

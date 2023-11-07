@@ -69,7 +69,7 @@ class ClientsController extends Controller
         $client->bs = $status["bs"];
         $client->save();
 
-        return redirect()->route("client.index");
+        return redirect()->back();
     }
 
 
