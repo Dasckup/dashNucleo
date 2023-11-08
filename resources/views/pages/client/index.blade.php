@@ -41,7 +41,7 @@
                                         @foreach($data as $reponse)
                                             <?php
                                               $client = $reponse->clients;
-                                              $name = mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8");
+                                              $name = explode(' ', mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8"))[0];
                                               $email = $client->email != null? $client->email : "Não informado";
                                             ?>
                                         <tr>

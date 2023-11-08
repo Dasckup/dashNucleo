@@ -217,13 +217,11 @@
                                                     echo $countSemContato;
                                                     ?>
                                                 </span>
-                                                <span class="widget-stats-info">Submissões</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-xl-6">
                                 <div class="card widget widget-stats">
                                     <div class="card-body">
@@ -243,7 +241,6 @@
                                                     echo $countComContato;
                                                     ?>
                                                 </span>
-                                                <span class="widget-stats-info">Submissões</span>
                                             </div>
                                         </div>
                                     </div>
@@ -317,7 +314,7 @@
                                                                 </p>
                                                                 <p style="font-weight:500" class="m-0 sub-title-row-in-table d-flex">
                                                                     @if(preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->cellphone))
-                                                                        <a target="_BLANK" class="d-flex align-items-center me-1" style="text-decoration: none" href="https://wa.me/<?= str_replace('+', '',$client->ddi)?><?= preg_replace('/[^0-9]/', '', $client->cellphone)?>?text=Ol%C3%A1+{{$name}}%2C+tudo+bem%3F">
+                                                                        <a target="_BLANK" class="d-flex align-items-center me-1" style="text-decoration: none" href="https://wa.me/<?= str_replace('+', '',$client->ddi)?><?= preg_replace('/[^0-9]/', '', $client->cellphone)?>?text=Ol%C3%A1+{{explode(' ', $name)[0]}}%2C+tudo+bem%3F">
                                                                             <span style="font-size: 15px;" class="material-symbols-outlined m-0">
                                                                                 quick_phrases
                                                                             </span>
