@@ -10,6 +10,7 @@ use App\Models\TypesContact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\ZapBoss;
 
 class AutoSaveController extends Controller
 {
@@ -78,4 +79,82 @@ class AutoSaveController extends Controller
         ]);
     }
 
+    public function notContacted(){
+        $clients = ClientsFromAutoSave::where("status", "intention")->with("contacts")->orderBy("created_at","ASC")->get();
+        $clientsNotContacted = [];
+
+        foreach($clients as $client){
+            if(count($client->contacts) == 0){
+                array_push($clientsNotContacted, $client);
+            }
+        }
+
+        return view('pages.client.autosave.not_contacted.index', [
+            "clients" => $clientsNotContacted
+        ]);
+    }
+
+    public function notContactedShow(){
+        $clients = ClientsFromAutoSave::where("status", "intention")->with("contacts")->orderBy("created_at","ASC")->get();
+        $clientsNotContacted = [];
+
+        foreach($clients as $client){
+            if(count($client->contacts) == 0){
+                array_push($clientsNotContacted, $client);
+            }
+        }
+
+        return view('pages.client.autosave.not_contacted.index', [
+            "clients" => $clientsNotContacted
+        ]);
+    }
+
+    public function SendMessageToNotContacted(Request $request){
+
+        $clientId = $request->client;
+        $user = User::where("id", $request->user)->first();
+        $name = ucwords(strtolower(explode(' ',$request->name)[0]));
+        $message = "Boa tarde, $name!
+Somos da *Revista Científica Multidisciplinar Núcleo Do Conhecimento*, percebemos que você iniciou uma submissão de artigo científico mas não finalizou, você deseja publicar um artigo científico?";
+
+        $zapboss = new ZapBoss();
+        $zapboss->to($request->cellphone);
+        $zapboss->message($message);
+
+        $response = $zapboss->send();
+
+        $clientsSaved = new ContactClientsFromAutoSave();
+        $clientsSaved->user = $user->id;
+        $clientsSaved->client = $clientId;
+        $clientsSaved->type = 5;
+        $clientsSaved->observation = "Mensagem enviada automaticamente pelo sistema";
+        $clientsSaved->date = date("Y-m-dTH:i");
+        $clientsSaved->save();
+
+        return response()->json([
+            "status" => "success",
+        ]);
+    }
+
+
+    public function send_message_to_client(){
+
+
+
+
+    }
+
+
+    public function returned(Request $request){
+        $numero = str_replace('55','',$request->sender);
+        $formatCell = "(" . substr($numero, 0, 2) . ") " . substr($numero, 2, 5) . "-" . substr($numero, 7);
+        $intention = ClientsFromAutoSave::where("cellphone", $formatCell)->where("returned", false)->first();
+        if($intention){
+            $intention->returned = true;
+            $intention->save();
+        }
+    }
 }
+
+
+

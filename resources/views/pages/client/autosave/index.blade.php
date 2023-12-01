@@ -77,7 +77,7 @@
 
             if(obs.value.length < 10){
                 obs.classList.add("is-invalid");
-                return ;
+                return;
             }
 
             if(!validarData(new Date(date.value))){
@@ -112,20 +112,16 @@
 
                         button.prop("disabled", false);
                         button.html("Salvar contato");
-
                     }else{
-                        alert("Algo deu errado :(");
                         button.prop("disabled", false);
                         button.html("Salvar contato");
                     }
                 },
                 error: function (data) {
-                    alert("Algo deu errado :(");
                     button.prop("disabled", false);
                     button.html("Salvar contato");
                 }
             });
-
         }
 
         function AddContact(element, metadata){
@@ -233,12 +229,11 @@
                                                 <span class="widget-stats-title">Atendidos</span>
                                                 <span class="widget-stats-amount" id="contacted">
                                                     <?php
-                                                    $clientesComContato = array_filter(json_decode(json_encode($clients), true), function ($cliente) {
-                                                        return count($cliente['contacts']) > 0;
-                                                    });
-
-                                                    $countComContato = count($clientesComContato);
-                                                    echo $countComContato;
+                                                        $clientesComContato = array_filter(json_decode(json_encode($clients), true), function ($cliente) {
+                                                            return count($cliente['contacts']) > 0;
+                                                        });
+                                                        $countComContato = count($clientesComContato);
+                                                        echo $countComContato;
                                                     ?>
                                                 </span>
                                             </div>
@@ -415,7 +410,7 @@
                                                                                     <li class="timeline-list-item">
                                                                                         <p class="timeline-list-item-obs">{{$contact->observation}}</p>
                                                                                         <div class="d-flex w-100 justify-content-between">
-                                                                                            <div>{{$contact->users->name}}</div>
+                                                                                            <div>{{$contact->users->name}} - <b>{{$contact->types->label}}</b></div>
                                                                                             <div>{{date("d/m/Y \á\s H:i", strtotime($contact->date))}}</div>
                                                                                         </div>
                                                                                     </li>
@@ -488,7 +483,6 @@
 
 
 <?php
-
 function CreateRow($data1,$data2){
     return (
         '

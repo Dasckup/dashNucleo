@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class RequestsClientsDocuments extends Model
 {
     use HasFactory;
+
+    public function clients(){
+        return $this->hasOne(RequestsClients::class, "id", "client");
+    }
 }

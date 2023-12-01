@@ -20,12 +20,6 @@ $(document).ready(function () {
         "order": [[0, "desc"]]
     });
 
-    $('#datatable2').DataTable({
-        "scrollY": "300px",
-        "scrollCollapse": true,
-        "paging": false
-    });
-
     $('#datatable3').DataTable({
         "scrollX": true
     });

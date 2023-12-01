@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TypesContact;
 
 class ContactClientsFromAutoSave extends Model
 {
@@ -13,4 +14,9 @@ class ContactClientsFromAutoSave extends Model
     public function users(){
         return $this->hasOne(User::class, 'id', 'user');
     }
+
+    public function types(){
+        return $this->hasOne(TypesContact::class, 'id', 'type');
+    }
+
 }

@@ -139,9 +139,6 @@
                                             <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
                                         </div>
                                     </div>
-
-
-
                                 </div>
                                 <div class="tab-pane fade" id="submission" role="tabpanel" aria-labelledby="submission">
                                     <div class="row m-b-xxl">
@@ -177,11 +174,6 @@
                                             <textarea rows="7" readonly type="text" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword">{{$client->submission->observation}}</textarea>
                                         </div>
                                     </div>
-
-
-
-
-
                                 </div>
                                 <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="material">
                                     <div class="col-sm-7">
@@ -199,7 +191,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @if($client->material->url_photo)
+                                    @if($client->material->url_photo&&$client->material->size_photo)
                                         <div class="col-sm-7">
                                             <label  class="form-label">Foto enviada por {{$client->name}}:</label>
                                             <div class="card file-manager-recent-item">

@@ -9,11 +9,40 @@
         <div class="container-fluid">
             <div class="navbar-nav" id="navbarNav">
                 <div class="logo">
-                    <a href="{{route("home")}}">
+                    <a class="me-0" href="{{route("home")}}">
                         <img width="30px" height="30px" src="{{asset("/template/assets/images/icons/logoicon.png")}}" alt="">    DASCKUP
                     </a>
                 </div>
                 <ul class="navbar-nav">
+                    <li class="nav-item dropdown hidden-on-mobile">
+                        <a class="nav-link dropdown-toggle " href="#" id="exploreDropdownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="material-icons-outlined">add</i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-lg large-items-menu" aria-labelledby="exploreDropdownLink">
+                            <li>
+                                <h6 class="dropdown-header">Recursos para usuários</h6>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('client.intention.not_contacted')}}">
+                                    <h5 class="dropdown-item-title">
+                                        Mensagens em massa
+                                        <span class="hidden-helper-text">ver mais <i class="material-icons ms-1">keyboard_arrow_right</i></span>
+                                    </h5>
+                                    <span class="dropdown-item-description">Envie mensagens em massa otimizando horas de trabalho</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('events.index')}}">
+                                    <h5 class="dropdown-item-title">
+                                        Eventos
+                                        <span class="badge badge-success">novo</span>
+                                        <span class="hidden-helper-text">ver mais <i class="material-icons ms-1">keyboard_arrow_right</i></span>
+                                    </h5>
+                                    <span class="dropdown-item-description">Otimize seu tempo e simplifique processos. Descubra o poder da automação com facilidade</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">last_page</i></a>
                     </li>
@@ -31,8 +60,6 @@
                     <li class="nav-item hidden-on-mobile">
                         <a class="nav-link " href="https://dasckup.com">Projetos</a>
                     </li>
-
-
 
                     <li class="nav-item">
                         <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
@@ -118,7 +145,6 @@
             <li class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }}">
                 <a class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }} text-danger" href="{{route("client.index.cancelados")}}">Canceladas</a>
             </li>
-
 
 
             <li class="{{ request()->is('perfil') ? 'active-page' : '' }}">
