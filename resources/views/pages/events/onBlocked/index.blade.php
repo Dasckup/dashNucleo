@@ -18,7 +18,7 @@
                         <i class="material-icons" style="font-size: 35px;color: var(--bs-danger);">pause_circle</i>
                     </div>
                 </td>
-                <td >
+                <td>
                     {{ $response->groups->label }}
                 </td>
                 <td>

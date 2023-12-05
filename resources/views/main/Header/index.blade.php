@@ -22,20 +22,11 @@
                             <li>
                                 <h6 class="dropdown-header">Recursos para usuários</h6>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="{{route('client.intention.not_contacted')}}">
-                                    <h5 class="dropdown-item-title">
-                                        Mensagens em massa
-                                        <span class="hidden-helper-text">ver mais <i class="material-icons ms-1">keyboard_arrow_right</i></span>
-                                    </h5>
-                                    <span class="dropdown-item-description">Envie mensagens em massa otimizando horas de trabalho</span>
-                                </a>
-                            </li>
+
                             <li>
                                 <a class="dropdown-item" href="{{route('events.index')}}">
                                     <h5 class="dropdown-item-title">
-                                        Eventos
-                                        <span class="badge badge-success">novo</span>
+                                        Mensagens automáticas
                                         <span class="hidden-helper-text">ver mais <i class="material-icons ms-1">keyboard_arrow_right</i></span>
                                     </h5>
                                     <span class="dropdown-item-description">Otimize seu tempo e simplifique processos. Descubra o poder da automação com facilidade</span>

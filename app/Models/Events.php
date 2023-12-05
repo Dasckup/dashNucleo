@@ -21,4 +21,8 @@ class Events extends Model
     public function intentions(){
         return $this->hasOne(EventsIntentionSubmition::class, 'events', 'id');
     }
+
+    public function log(){
+        return $this->hasMany(EventsLog::class, 'events', 'id')->orderBy('created_at', 'desc');
+    }
 }

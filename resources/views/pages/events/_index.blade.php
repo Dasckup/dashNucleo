@@ -83,7 +83,6 @@
 
     <script>
         $(document).ready(function() {
-
             $('#onStoped').DataTable({
                 "language": {
                     "sZeroRecords": "Nenhum resultado encontrado",
@@ -124,15 +123,6 @@
                 }
             })
 
-            $("#option-check-returned").on('click', () => {
-                const input = $('#option-check-returned input');
-
-                if(input.is(':checked')){
-                    $('#option-check-returned-level').removeClass('d-none');
-                }else{
-                    $('#option-check-returned-level').addClass('d-none');
-                }
-            })
 
             $("select[name='send_on_date']").on('change', (e) => {
                 const value = e.target.value;
@@ -143,9 +133,21 @@
                 }
 
                 if(value == 'hours'){
+                    $('#on_time_to_send').addClass('d-none');
                     $('#hours_selected').removeClass('d-none');
                 }else{
                     $('#hours_selected').addClass('d-none');
+                    $('#on_time_to_send').removeClass('d-none');
+                }
+            })
+
+            $("#on_time_to_send").on('click', (e) => {
+
+                const input = $('#on_time_to_send input');
+                if(input.is(':checked')){
+                    $('#select_time_to_send').removeClass('d-none');
+                }else{
+                    $('#select_time_to_send').addClass('d-none');
                 }
             })
 

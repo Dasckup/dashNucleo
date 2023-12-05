@@ -44,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/eventos/new', 'store')->name("events.store");
         Route::get('/eventos/stop/{event}', 'stop')->name("events.stop");
         Route::get('/eventos/start/{event}', 'start')->name("events.start");
+        Route::get('/eventos/editar/{event}', 'show')->name("events.show");
+        Route::put('/eventos/salvar/{event}', 'update')->name("events.update");
+
     });
 
     Route::controller(AutoSave::class)->group(function (){
@@ -73,6 +76,4 @@ Route::controller(Events::class)->group(function () {
 });
 
 
-Route::controller(AutoSave::class)->group(function (){
-    Route::post('/webhook/intencao-de-submissao/returned', 'returned');
-});
+

@@ -145,15 +145,6 @@ Somos da *Revista Científica Multidisciplinar Núcleo Do Conhecimento*, percebe
     }
 
 
-    public function returned(Request $request){
-        $numero = str_replace('55','',$request->sender);
-        $formatCell = "(" . substr($numero, 0, 2) . ") " . substr($numero, 2, 5) . "-" . substr($numero, 7);
-        $intention = ClientsFromAutoSave::where("cellphone", $formatCell)->where("returned", false)->first();
-        if($intention){
-            $intention->returned = true;
-            $intention->save();
-        }
-    }
 }
 
 

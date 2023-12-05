@@ -13,9 +13,9 @@
 <script>
     function mostrarTexto() {
         var messageText = document.querySelector('.message-text');
-        messageText.style.whiteSpace = 'normal'; // Altera para 'normal' para exibir todo o texto
-        messageText.style.overflow = 'visible'; // Remove o overflow oculto
-        messageText.style.textOverflow = 'clip'; // Remove o ellipsis
+        messageText.style.whiteSpace = 'normal';
+        messageText.style.overflow = 'visible';
+        messageText.style.textOverflow = 'clip';
     }
 </script>
 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
@@ -44,7 +44,15 @@
                     {{ $response->groups->label }}
                 </td>
                 <td>
-                    <div class="message-text">{{ $response->message }}</div>
+                    <div class="d-flex">
+                        <div class="message-text me-1">{{ $response->message }}</div>
+                        <a href="<?=route('events.show', ['event' => $response->id])?>">
+                            <i style="font-size: 17px;color: #0067ef;"
+                               class="material-icons">
+                               edit_square
+                            </i>
+                        </a>
+                    </div>
                 </td>
                 <td class="text-center">
                     <div>{{$response->on_date_amount}} {{ GetTransletedDay($response->on_date) }}</div>

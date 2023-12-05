@@ -13,13 +13,13 @@ use App\Models\RequestsClientsDocuments;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Cryptography;
 use App\Http\Middleware\ZapBoss;
+use App\Models\Alog;
 use App\Models\EventsLog;
 use Illuminate\Support\Facades\Auth;
 
 class EventsController extends Controller
 {
-    public function index()
-    {
+    public function index(){
 
         $eventsInProgress = Events::where('active', true)->with('groups')->get();
         $eventsInBlocked = Events::where('active', false)->with('groups')->get();
@@ -46,6 +46,11 @@ class EventsController extends Controller
                 $getDate = $this->jump_NotBusinessDay($getDate);
             }
 
+
+            if($request->on_time_to_send==="on"&&$request->time_to_send){
+                $getDate = date('Y-m-d', strtotime($getDate)) .' '. $request->time_to_send;
+            }
+
             $event = new Events();
             $event->to = $request->to;
             $event->message = $request->message;
@@ -57,6 +62,11 @@ class EventsController extends Controller
             $event->on_date_amount = $request->send_on_date_amount;
             $event->only_bussines_days = $request->only_bussines_days==="on"?true:false;
             $event->comercial_time = $request->comercial_time==="on"?true:false;
+
+            if($request->on_time_to_send==="on"&&$request->time_to_send){
+                $event->default_time = $request->time_to_send;
+            }
+
             $event->save();
 
             if(($request->only_contact_returned||$request->only_not_contacted)&&$request->to=="2"){
@@ -69,7 +79,7 @@ class EventsController extends Controller
             }
 
             $eventLog = new EventsLog();
-            $eventLog->event = $event->id;
+            $eventLog->events = $event->id;
             $eventLog->message = 'Evento criado';
             $eventLog->success = true;
             $eventLog->save();
@@ -205,7 +215,7 @@ class EventsController extends Controller
                         $event->active = false;
 
                         $eventLog = new EventsLog();
-                        $eventLog->event = $event->id;
+                        $eventLog->events = $event->id;
                         $eventLog->message = 'Evento finalizado por limite de envios';
                         $eventLog->success = true;
                         $eventLog->save();
@@ -220,33 +230,37 @@ class EventsController extends Controller
                     ])), $getDate);
                 }elseif($event->send_on_date==="days"&&$event->only_bussines_days){
                     $getDate = $this->jump_NotBusinessDay($getDate);
-                }
 
+                    if($event->default_time){
+                        $getDate = date('Y-m-d', strtotime($getDate)) .' '. $event->default_time;
+                    }
+                }
 
                 $event->on = $getDate;
                 $event->save();
 
-                $eventLog = new EventsLog();
-                $eventLog->event = $event->id;
-                $eventLog->message = 'Evento executado';
-                $eventLog->success = true;
-                $eventLog->save();
 
                 $clients = $this->getGroups($event);
 
                 if(count($clients) == 0){
                     $eventLog = new EventsLog();
-                    $eventLog->event = $event->id;
+                    $eventLog->events = $event->id;
                     $eventLog->message = 'Nada a enviar';
-                    $eventLog->success = false;
+                    $eventLog->success = true;
                     $eventLog->save();
                     continue;
+                }else{
+                    $eventLog = new EventsLog();
+                    $eventLog->events = $event->id;
+                    $eventLog->message = 'Evento enviado para ['.count($clients).'] clientes';
+                    $eventLog->success = true;
+                    $eventLog->save();
                 }
                 array_push($clientsList, $clients);
 
             }catch(\Exception $e){
                 $eventLog = new EventsLog();
-                $eventLog->event = $event->id;
+                $eventLog->events = $event->id;
                 $eventLog->message = 'Algo deu errado: '.$e->getMessage();
                 $eventLog->success = false;
                 $eventLog->save();
@@ -285,7 +299,7 @@ class EventsController extends Controller
                 CURLOPT_POSTFIELDS => array(
                     'appkey' => 'f0a3c6ed-e236-4cb5-a5f6-e8e6e30422d7',
                     'authkey' => 'jTjUo490I771cli5Ao79nmxXcbxWLZ3wN9GGFuJLa8tIogcOWg',
-                    'to' => '5519996693306',
+                    'to' => $clientData['cellphone'],
                     'message' => $clientData['message'],
                     'sandbox' => 'false'
                 )
@@ -310,7 +324,6 @@ class EventsController extends Controller
             'message' => 'Eventos enviados para processamento em segundo plano.'
         ]);
     }
-
 
     private function setValueSendTo($data,$message){
         $phoneNumber = preg_replace('/[^\d]/', '', $data->cellphone);
@@ -443,25 +456,27 @@ class EventsController extends Controller
                 $clients = RequestsClientsDocuments::with('clients')->get();
                 if(isset($clients)){
                     foreach($clients as $key => $client){
-                        if(!preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->cellphone)){
+                        if(!preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->clients->cellphone)){
                             continue;
                         }
 
-                        $birthday = Cryptography::decrypt($client->clients->birthday);
+                        $birthday = Cryptography::decrypt($client->birthday);
                         if(date('d/m', strtotime($birthday)) != date('d/m')){
-                            $clients->forget($client);
+                            continue;
                         }
-                        array_push($sendTo, $this->setValueSendTo($client->clients, $event->message));
+
+                        $cellphonesInSendTo = array_column($sendTo, 'cellphone');
+                        $objClient = $this->setValueSendTo($client->clients, $event->message);
+
+                        if (!in_array($objClient['cellphone'], $cellphonesInSendTo)) {
+                            array_push($sendTo, $objClient);
+                        }
                     }
                 }
-
                 return $sendTo;
             break;
-
         }
     }
-
-
 
     public function stop($event){
         if(!Auth::user()){
@@ -474,7 +489,7 @@ class EventsController extends Controller
         $event->save();
 
         $eventLog = new EventsLog();
-        $eventLog->event = $event->id;
+        $eventLog->events = $event->id;
         $eventLog->message = 'Evento parado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
         $eventLog->success = true;
         $eventLog->save();
@@ -504,12 +519,73 @@ class EventsController extends Controller
         $event->save();
 
         $eventLog = new EventsLog();
-        $eventLog->event = $event->id;
+        $eventLog->events = $event->id;
         $eventLog->message = 'Evento remotado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
         $eventLog->success = true;
         $eventLog->save();
 
         return redirect()->back();
+    }
+
+    public function show($event){
+        $event = Events::where('id', $event)->with('groups')->with('log')->first();
+
+        return view('pages.events.show.index', [
+            'event' => $event
+        ]);
+    }
+
+
+    public function update(Request $request , $event){
+
+        try{
+
+
+            $event = Events::where('id', $event)->first();
+
+            if(!$event){
+                throw new \Exception('Evento não encontrado');
+            }
+
+            if($event->message !== $request->message){
+                $log = new EventsLog();
+                $log->events = $event->id;
+                $log->message = 'Mensagem alterada por [#'.Auth::user()->id.' '.Auth::user()->name.']';
+                $log->success = true;
+                $log->save();
+
+                $serverLog = new Alog();
+                $serverLog->user = Auth::user()->id;
+                $serverLog->message = 'Mensagem do evento '.$event->id.' foi alterada por [#'.Auth::user()->id.' '.Auth::user()->name.']';
+                $serverLog->ip = $_SERVER['REMOTE_ADDR'];
+                $serverLog->save();
+
+                $event->message = $request->message;
+            }
+
+            $event->infinit = $request->infinit_mode==="on"?true:false;
+            $event->limit = $request->limit;
+            $event->on_date = $request->send_on_date;
+            $event->on_date_amount = $request->send_on_date_amount;
+            $event->only_bussines_days = $request->only_bussines_days==="on"?true:false;
+            $event->comercial_time = $request->comercial_time==="on"?true:false;
+
+            if(($request->only_contact_returned||$request->only_not_contacted)&&$event->to==2){
+                $eventGroupIntention = EventsIntentionSubmition::where("event" , $event->id)->first();
+                $eventGroupIntention->only_not_contact_returned = $request->only_contact_returned==="on"?true:false;
+                $eventGroupIntention->only_intention_not_contacted = $request->only_not_contacted==="on"?true:false;
+                $eventGroupIntention->only_send_per_level = $request->send_per_return_level==="on"?true:false;
+                $eventGroupIntention->save();
+            }
+
+            $event->save();
+
+            return redirect()->back()->with('success', 'Evento atualizado com sucesso');
+
+        }catch (\Exception $e){
+            return redirect()->back()->with('error', 'Algo deu errado');
+        }
+
     }
 }
 

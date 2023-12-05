@@ -18,9 +18,6 @@
                 <label id="option-check-returned" class="form-label d-flex aling-items-center" style=" line-height: 21px; ">
                     <input name="only_contact_returned" type="checkbox" class="form-check-input me-2"> Somente intenções que não retornaram contato
                 </label>
-                <label id="option-check-returned-level" class="form-label d-none ms-4 " style=" line-height: 21px; ">
-                    <input name="send_per_return_level" type="checkbox" class="form-check-input me-2"> Enviar por nivel de retorno
-                </label>
                 <label class="form-label d-flex aling-items-center mt-2" style=" line-height: 21px; ">
                     <input name="only_not_contacted" type="checkbox" class="form-check-input me-2"> Somente intenções que não foram receberam contato
                 </label>
@@ -45,13 +42,28 @@
             </div>
         </div>
 
+
+
         <div id="display_actions_checkbox_date">
             <div class="row mt-4">
-                <label id="option-check-returned-level" class="form-label" style=" line-height: 21px; ">
+                <label  class="form-label" style=" line-height: 21px; ">
                     <input name="only_bussines_days" type="checkbox" class="form-check-input me-2"> Apenas dias úteis
                 </label>
             </div>
         </div>
+
+        <div id="field_select_time_to_send">
+            <div class="col-sm-12">
+                <label id="on_time_to_send" class="form-label" style=" line-height: 21px; ">
+                    <input name="on_time_to_send" type="checkbox" class="form-check-input me-2"> Definir horario padrão
+                </label>
+            </div>
+            <div id="select_time_to_send" class="col-sm-3 d-none">
+                <label class="form-label">Horario <code>*</code></label>
+                <input value="09:00" name="time_to_send" type="time" class="form-control">
+            </div>
+        </div>
+
         <div class="row d-none mt-4" id="hours_selected">
             <label id="comercial_time" class="form-label d-flex aling-items-center mt-1" style=" line-height: 21px; ">
                 <input name="comercial_time" type="checkbox" class="form-check-input me-2"> Apenas Horario comercial
@@ -102,6 +114,7 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-body">
+
                 <div>
                     <div class="d-flex flex-row justify-content-between align-items-center mb-3">
                         <div style="font-weight:bold">Você tem certeza?</div>
