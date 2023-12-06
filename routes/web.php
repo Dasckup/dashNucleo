@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/submissoes/cancelados', 'index_cancelados')->name("client.index.cancelados");
 
         Route::get('/submissoes/{id}/{status}', 'update')->name("client.update");
+        Route::post('/submissoes/update_status/', 'updateStatus')->name("client.update.status");
+
         Route::get('/submissoes/{id}/', 'show')->name("client.show");
 
         Route::get('/submissoes/form/send/whatsapp', 'send_message_to_client')->name("client.whatsapp");

@@ -3,10 +3,62 @@
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
+
+<style>
+    .dropdown-item{
+        cursor: pointer;
+    }
+</style>
 @endsection
 
 @section('js')
     <script src="{{asset("/template/assets/js/datatables.js")}}"></script>
+    <script src="{{asset("/template/assets/js/blockui.js")}}"></script>
+
+
+    <script>
+
+
+
+        function statusUpdate(element){
+            $('#blockui-card-1').block({
+                message: '<div class="spinner-grow text-primary" role="status"><span class="visually-hidden">Loading...</span><div>',
+                timeout: 2000
+            });
+
+            $.ajax({
+                url: "{{route('client.update.status')}}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "user": "{{Auth::user()->id}}",
+                    "status": element.getAttribute('data-value'),
+                    "id": element.getAttribute('data-to')
+                },
+                success: (data) => {
+                    console.log(data);
+                    $("#client-"+element.getAttribute('data-to')).remove();
+                    $("#display-alert").html(`
+                        <div class="alert alert-custom position-relative" role="alert">
+                            <div class="position-absolute me-2" style="right:0px">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div class="custom-alert-icon icon-success"><i class="material-icons-outlined">done</i></div>
+                            <div class="alert-content">
+                                <span class="alert-title" id="status-title">Status da submissão atualizado com sucesso</span>
+                                <span class="alert-text" id="status-submessage">
+                                    A submissão foi movida para aba de submissões <span class='text-${data.status.bs} text-captalize'>${data.status.status}</span>
+                                </span>
+                            </div>
+                        </div>
+                    `)
+                },
+                error: (data) => {
+                    console.log(data);
+                }
+            })
+        }
+    </script>
 @endsection
 
 @section('content')
@@ -22,9 +74,14 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div id="display-alert" class="col-sm-12">
+
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col">
                         <div class="card">
-                            <div class="card-body">
+                            <div id="blockui-card-1" class="card-body">
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                     <tr>
@@ -44,7 +101,7 @@
                                               $name = explode(' ', mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8"))[0];
                                               $email = $client->email != null? $client->email : "Não informado";
                                             ?>
-                                        <tr>
+                                        <tr id="client-{{$client->id}}">
                                             <td class="d-none">{{$client->id}}</td>
                                             <td class="text-center">
                                                 <div class="dropdown">
@@ -53,22 +110,22 @@
                                                     </a>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                                         <li>
-                                                            <a class="dropdown-item d-flex align-items-center text-warning" data-value="pendente">
+                                                            <a id="blockui-1" onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-warning" data-value="pendente" data-to="{{$client->id}}">
                                                                 <i class="material-icons me-2" style="font-size: 19px">schedule</i> Pendente
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item d-flex align-items-center text-info" data-value="atendido">
+                                                            <a  onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-info" data-value="atendido" data-to="{{$client->id}}">
                                                                 <i class="material-icons me-2" style="font-size: 19px">done</i> Atendido
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item d-flex align-items-center text-success" data-value="pago">
+                                                            <a onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-success" data-value="pago" data-to="{{$client->id}}">
                                                                 <i class="material-icons me-2" style="font-size: 19px">attach_money</i> Pago
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item d-flex text-danger align-items-center" data-value="cancelado">
+                                                            <a onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex text-danger align-items-center" data-value="cancelado" data-to="{{$client->id}}">
                                                                 <i class="material-icons me-2" style="font-size: 19px">close</i> Cancelado
                                                             </a>
                                                         </li>

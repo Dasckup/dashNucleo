@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\ZapBoss;
 use App\Models\ClientsFromAutoSave;
 use App\Models\ContactClientsFromAutoSave;
+use App\Models\User;
 
 class ClientsController extends Controller
 {
@@ -73,6 +74,58 @@ class ClientsController extends Controller
         return redirect()->back();
     }
 
+    public function updateStatus(Request $request){
+        $user = User::where('id', $request["user"])->first();
+        $client = RequestClientsStatus::where("client", $request["id"])->first();
+        $status = $request["status"];
+
+
+        if(!$client){
+            return redirect()->route("client.index");
+        }
+
+        switch ($status){
+            case "pendente":
+                $status = [
+                    "status" => "pendente",
+                    "bs" => "warning"
+                ];
+            break;
+            case "cancelado":
+                $status = [
+                    "status" => "cancelado",
+                    "bs" => "danger"
+                ];
+            break;
+            case "pago":
+                $status = [
+                    "status" => "pago",
+                    "bs" => "success"
+                ];
+            break;
+            default:
+                $status = [
+                    "status" => "atendido",
+                    "bs" => "info"
+                ];
+            break;
+        }
+
+        $saveInLog = new Alog();
+        $saveInLog->user = $user->id;
+        $saveInLog->message = "Alterou o status do cliente [#".$client->id."] de: ".$client->status." para: ".$status["status"];
+        $saveInLog->ip = $_SERVER['REMOTE_ADDR'];
+        $saveInLog->save();
+
+        $client->status = $status["status"];
+        $client->bs = $status["bs"];
+        $client->save();
+
+        return response()->json([
+            'success' => true,
+            'status' => $status
+        ]);
+    }
 
     public function show($id){
         if(!Auth::user()){

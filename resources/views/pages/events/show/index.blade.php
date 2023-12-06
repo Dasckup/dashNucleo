@@ -208,7 +208,10 @@
                     @endif
 
                     @if(session('error'))
-                        <div class="alert alert-custom" role="alert">
+                        <div class="alert alert-custom position-relative" role="alert">
+                            <div class="position-absolute me-2" style="right:0px">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             <div class="custom-alert-icon icon-danger"><i class="material-icons-outlined">close</i></div>
                             <div class="alert-content">
                                 <span class="alert-title">Não foi possivel editar o evento...</span>

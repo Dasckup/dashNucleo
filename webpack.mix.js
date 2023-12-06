@@ -46,6 +46,12 @@ mix.
         'resources/assets/plugins/datatables/datatables.min.js',
         'resources/assets/js/pages/datatables.js',
     ], 'public/template/assets/js/datatables.js')
+
+    .scripts([
+        'resources/assets/plugins/blockUI/jquery.blockUI.min.js',
+        'resources/assets/js/pages/blockui.js',
+    ], 'public/template/assets/js/blockui.js')
+
     .scripts([
         'resources/assets/js/main.min.js',
         'resources/assets/js/custom.js',
