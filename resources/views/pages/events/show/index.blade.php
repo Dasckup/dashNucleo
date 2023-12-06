@@ -51,6 +51,10 @@
             color: #999;
         }
 
+        .log-item-messages span {
+            font-size: 14px;
+        }
+
         .progress-bar {
         width: 200px;
         height: 6px;
@@ -108,6 +112,13 @@
             font-size: 36px;
             background: #fff;
             border-radius: 100%;
+        }
+
+        .message-text:not(.message-show-all) {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 400px;
         }
     </style>
 @endsection
@@ -353,9 +364,50 @@
                                                                 </div>
                                                                 <div class="d-flex flex-column">
                                                                     <span class="log-item-message">{{$log->message}}</span>
-                                                                    <span class="log-item-date">{{date('d/m/Y \á\s H:i' , strtotime($log->created_at))}}</span>
+                                                                    <div>
+                                                                        <span class="log-item-date">{{date('d/m/Y \á\s H:i' , strtotime($log->created_at))}}</span>
+                                                                        @if(count($log->messages_sended)>0)
+                                                                            <a data-bs-toggle="modal" data-bs-target="#listMessages_{{$log->id}}" class="log-item-messages">
+                                                                                <span class="material-symbols-outlined">
+                                                                                    forum
+                                                                                </span>
+                                                                            </a>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="modal fade" id="listMessages_{{$log->id}}" tabindex="-1" aria-labelledby="listMessages_{{$log->id}}" aria-hidden="true">
+                                                                    <div class="modal-dialog modal-dialog-centered">
+                                                                      <div class="modal-content">
+                                                                        <div class="modal-body">
+                                                                            <ul class="p-0 m-0" style="list-style: none">
+                                                                                @foreach ($log->messages_sended as $key => $message)
+                                                                                    <li class="log-item d-flex flex-row mb-3">
+                                                                                        <div class="d-flex me-2">
+                                                                                            <span class="text-info material-symbols-outlined">
+                                                                                                chat_bubble
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <div class="d-flex flex-column mb-2">
+                                                                                                {{$message->client_name}}
+                                                                                                <span class="log-item-date">{{$message->client_cellphone}}</span>
+                                                                                            </div>
+                                                                                            <span class="log-item-date">Mensagem:</span>
+                                                                                            <div class="message-text me-1" >{{ $message->message }}</div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                @endforeach
+                                                                            </ul>
+                                                                        </div>
+                                                                      </div>
+                                                                    </div>
                                                                 </div>
                                                             </li>
+
+
+
+
                                                         @endforeach
                                                     </ul>
                                                 </div>
