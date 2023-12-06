@@ -15,6 +15,8 @@ use App\Http\Middleware\Cryptography;
 use App\Http\Middleware\ZapBoss;
 use App\Models\Alog;
 use App\Models\EventsLog;
+use App\Models\EventsLogMessageSended;
+use App\Models\EventsLogUpdates;
 use Illuminate\Support\Facades\Auth;
 
 class EventsController extends Controller
@@ -255,6 +257,17 @@ class EventsController extends Controller
                     $eventLog->message = 'Evento enviado para ['.count($clients).'] clientes';
                     $eventLog->success = true;
                     $eventLog->save();
+
+                    foreach($clients as $clientData){
+                        $updateLog = new EventsLogMessageSended();
+                        $updateLog->events = $event->id;
+                        $updateLog->log = $eventLog->id;
+                        $updateLog->name = $clientData['name'];
+                        $updateLog->cellphone = $clientData['cellphone'];
+                        $updateLog->message = $clientData['message'];
+                        $updateLog->save();
+                    }
+
                 }
                 array_push($clientsList, $clients);
 
@@ -286,6 +299,9 @@ class EventsController extends Controller
 
 
         foreach ($mergedArray as $clientData) {
+
+
+
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => 'https://app.zapboss24.com/api/create-message',
@@ -488,11 +504,11 @@ class EventsController extends Controller
         $event->on = null;
         $event->save();
 
-        $eventLog = new EventsLog();
-        $eventLog->events = $event->id;
-        $eventLog->message = 'Evento parado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
-        $eventLog->success = true;
-        $eventLog->save();
+        $updateLog = new EventsLogUpdates();
+        $updateLog->events = $event->id;
+        $updateLog->user = Auth::user()->id;
+        $updateLog->message = 'Evento parado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
+        $updateLog->save();
 
         return redirect()->back();
     }
@@ -518,17 +534,17 @@ class EventsController extends Controller
         $event->active = true;
         $event->save();
 
-        $eventLog = new EventsLog();
-        $eventLog->events = $event->id;
-        $eventLog->message = 'Evento remotado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
-        $eventLog->success = true;
-        $eventLog->save();
+        $updateLog = new EventsLogUpdates();
+        $updateLog->events = $event->id;
+        $updateLog->user = Auth::user()->id;
+        $updateLog->message = 'Evento retomado por [#'.Auth::user()->id.' '.Auth::user()->name.']';
+        $updateLog->save();
 
         return redirect()->back();
     }
 
     public function show($event){
-        $event = Events::where('id', $event)->with('groups')->with('log')->first();
+        $event = Events::where('id', $event)->with('groups')->with('log')->with('log_updates')->first();
 
         return view('pages.events.show.index', [
             'event' => $event
@@ -540,7 +556,6 @@ class EventsController extends Controller
 
         try{
 
-
             $event = Events::where('id', $event)->first();
 
             if(!$event){
@@ -548,17 +563,17 @@ class EventsController extends Controller
             }
 
             if($event->message !== $request->message){
-                $log = new EventsLog();
-                $log->events = $event->id;
-                $log->message = 'Mensagem alterada por [#'.Auth::user()->id.' '.Auth::user()->name.']';
-                $log->success = true;
-                $log->save();
-
                 $serverLog = new Alog();
                 $serverLog->user = Auth::user()->id;
                 $serverLog->message = 'Mensagem do evento '.$event->id.' foi alterada por [#'.Auth::user()->id.' '.Auth::user()->name.']';
                 $serverLog->ip = $_SERVER['REMOTE_ADDR'];
                 $serverLog->save();
+
+                $updateLog = new EventsLogUpdates();
+                $updateLog->events = $event->id;
+                $updateLog->user = Auth::user()->id;
+                $updateLog->message = 'Mensagem foi alterada por [#'.Auth::user()->id.' '.Auth::user()->name.']';
+                $updateLog->save();
 
                 $event->message = $request->message;
             }

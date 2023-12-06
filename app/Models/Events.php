@@ -23,6 +23,10 @@ class Events extends Model
     }
 
     public function log(){
-        return $this->hasMany(EventsLog::class, 'events', 'id')->orderBy('created_at', 'desc');
+        return $this->hasMany(EventsLog::class, 'events', 'id')->with('messages_sended')->orderBy('created_at', 'desc');
+    }
+
+    public function log_updates(){
+        return $this->hasMany(EventsLogUpdates::class, 'events', 'id')->orderBy('created_at', 'desc');
     }
 }

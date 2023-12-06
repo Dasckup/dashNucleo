@@ -224,13 +224,6 @@
                                                     <div class="indeterminate-progress-{{!$event->active?"stoped":"success"}}"></div>
                                                 </div>
                                             </div>
-                                            @if(!$event->active)
-                                                <div class="position-absolute icon-stoped">
-                                                    <span style=" font-size: 36px;  " class="material-symbols-outlined">
-                                                        pause_circle
-                                                    </span>
-                                                </div>
-                                            @endif
                                             <div class="position-absolute icon-person">
                                                 <span style=" font-size: 36px;  " class="text-{{!$event->active?"danger":"primary"}} material-symbols-outlined">
                                                     face
@@ -332,35 +325,75 @@
                         <div class="col-sm-5">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="mb-4">
-                                        <h4 style=" font-weight: bold; ">Historico de eventos</h4>
+
+                                    <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="pills-events-tab" data-bs-toggle="pill" data-bs-target="#pills-events" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Historico de eventos</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="pills-updated-tab" data-bs-toggle="pill" data-bs-target="#pills-updated" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Historico de atualizações</button>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade active show" id="pills-events" role="tabpanel" aria-labelledby="pills-events-tab">
+
+
+                                            @if(isset($event->log))
+                                                <div class="col-sm-12 d-flex flex-row">
+                                                    <ul style="list-style:none;overflow:auto;max-height:600px" class="w-100 p-0 m-0">
+                                                        @foreach ($event->log as $key => $log)
+                                                            <li class="log-item d-flex flex-row">
+                                                                <div class="d-flex align-items-center me-2">
+                                                                    @if($log->success)
+                                                                        <span class="text-success material-symbols-outlined">check_circle</span>
+                                                                    @else
+                                                                        <span class="text-danger material-symbols-outlined">cancel</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <span class="log-item-message">{{$log->message}}</span>
+                                                                    <span class="log-item-date">{{date('d/m/Y \á\s H:i' , strtotime($log->created_at))}}</span>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @else
+                                                <p>
+                                                    Nenhum evento foi disparado ainda
+                                                </p>
+                                            @endif
+                                        </div>
+                                        <div class="tab-pane fade" id="pills-updated" role="tabpanel" aria-labelledby="pills-updated-tab">
+
+                                            @if(isset($event->log_updates))
+                                                <div class="col-sm-12 d-flex flex-row">
+                                                    <ul style="list-style:none;overflow:auto;max-height:600px" class="w-100 p-0 m-0">
+                                                        @foreach ($event->log_updates as $key => $log)
+                                                            <li class="log-item d-flex flex-row">
+                                                                <div class="d-flex align-items-center me-2">
+                                                                    <span class="text-info material-symbols-outlined">info</span>
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <span class="log-item-message">{{$log->message}}</span>
+                                                                    <span class="log-item-date">{{date('d/m/Y \á\s H:i' , strtotime($log->created_at))}}</span>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @else
+                                                <p>
+                                                    Nenhum evento foi disparado ainda
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
 
-                                    @if(isset($event->log))
-                                        <div class="col-sm-12 d-flex flex-row">
-                                            <ul style="list-style:none;overflow:auto;max-height:600px" class="w-100 p-0 m-0">
-                                                @foreach ($event->log as $key => $log)
-                                                    <li class="log-item d-flex flex-row">
-                                                        <div class="d-flex align-items-center me-2">
-                                                            @if($log->success)
-                                                                <span class="text-success material-symbols-outlined">check_circle</span>
-                                                            @else
-                                                                <span class="text-danger material-symbols-outlined">cancel</span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="d-flex flex-column">
-                                                            <span class="log-item-message">{{$log->message}}</span>
-                                                            <span class="log-item-date">{{date('d/m/Y \á\s H:i' , strtotime($log->created_at))}}</span>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @else
-                                        <p>
-                                            Nenhum evento foi disparado ainda
-                                        </p>
-                                    @endif
+
+
+
                                 </div>
                             </div>
                         </div>
