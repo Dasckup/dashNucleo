@@ -52,18 +52,26 @@
                                                         @if($client->status){{$client->status->status}}@endif
                                                     </a>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                        <li><a class="dropdown-item d-flex align-items-center text-warning" href="{{route("client.update", ["id"=>$client->id,"status"=>"pendente"])}}">
-                                                        <i class="material-icons me-2" style="font-size: 19px">schedule</i> Pendente
-                                                        </a></li>
-                                                        <li><a class="dropdown-item d-flex align-items-center text-info" href="{{route("client.update", ["id"=>$client->id,"status"=>"atendido"])}}">
-                                                        <i class="material-icons me-2" style="font-size: 19px">done</i> Atendido
-                                                        </a></li>
-                                                        <li><a class="dropdown-item d-flex align-items-center text-success" href="{{route("client.update", ["id"=>$client->id,"status"=>"pago"])}}">
-                                                        <i class="material-icons me-2" style="font-size: 19px">attach_money</i> Pago
-                                                        </a></li>
-                                                        <li><a class="dropdown-item d-flex text-danger align-items-center" href="{{route("client.update", ["id"=>$client->id,"status"=>"cancelado"])}}">
-                                                        <i class="material-icons me-2" style="font-size: 19px">close</i> Cancelado
-                                                        </a></li>
+                                                        <li>
+                                                            <a class="dropdown-item d-flex align-items-center text-warning" data-value="pendente">
+                                                                <i class="material-icons me-2" style="font-size: 19px">schedule</i> Pendente
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item d-flex align-items-center text-info" data-value="atendido">
+                                                                <i class="material-icons me-2" style="font-size: 19px">done</i> Atendido
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item d-flex align-items-center text-success" data-value="pago">
+                                                                <i class="material-icons me-2" style="font-size: 19px">attach_money</i> Pago
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item d-flex text-danger align-items-center" data-value="cancelado">
+                                                                <i class="material-icons me-2" style="font-size: 19px">close</i> Cancelado
+                                                            </a>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </td>

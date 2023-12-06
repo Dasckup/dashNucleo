@@ -36,16 +36,16 @@
             <tr>
                 <td class="d-none">{{ $response->id }}</td>
                 <td>
-                    <div class="spinner-border" role="status">
+                    <div class="spinner-grow text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
-                    </div>
+                      </div>
                 </td>
                 <td >
                     {{ $response->groups->label }}
                 </td>
                 <td>
                     <div class="d-flex">
-                        <div class="message-text me-1">{{ $response->message }}</div>
+                        <div class="message-text me-1" style="min-width:400px">{{ $response->message }}</div>
                         <a href="<?=route('events.show', ['event' => $response->id])?>">
                             <i style="font-size: 17px;color: #0067ef;"
                                class="material-icons">

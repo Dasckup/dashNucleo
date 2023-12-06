@@ -184,26 +184,26 @@
                     </div>
 
                     @if(session('success'))
-                    <div class="alert alert-custom position-relative" role="alert">
-                        <div class="position-absolute me-2" style="right:0px">
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <div class="alert alert-custom position-relative" role="alert">
+                            <div class="position-absolute me-2" style="right:0px">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div class="custom-alert-icon icon-success"><i class="material-icons-outlined">done</i></div>
+                            <div class="alert-content">
+                                <span class="alert-title">Evento editado com sucesso!</span>
+                                <span class="alert-text">As alterações entraram em vigor a partir do próximo ciclo</span>
+                            </div>
                         </div>
-                        <div class="custom-alert-icon icon-success"><i class="material-icons-outlined">done</i></div>
-                        <div class="alert-content">
-                            <span class="alert-title">Evento editado com sucesso!</span>
-                            <span class="alert-text">As alterações entraram em vigor a partir do próximo ciclo</span>
-                        </div>
-                    </div>
                     @endif
 
                     @if(session('error'))
-                    <div class="alert alert-custom" role="alert">
-                        <div class="custom-alert-icon icon-danger"><i class="material-icons-outlined">close</i></div>
-                        <div class="alert-content">
-                            <span class="alert-title">Não foi possivel editar o evento...</span>
-                            <span class="alert-text">Algo deu errado, tente novamente mais tarde e/ou consulte o suporte técnico</span>
+                        <div class="alert alert-custom" role="alert">
+                            <div class="custom-alert-icon icon-danger"><i class="material-icons-outlined">close</i></div>
+                            <div class="alert-content">
+                                <span class="alert-title">Não foi possivel editar o evento...</span>
+                                <span class="alert-text">Algo deu errado, tente novamente mais tarde e/ou consulte o suporte técnico</span>
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                     <div class="row">
@@ -336,7 +336,6 @@
                                         <h4 style=" font-weight: bold; ">Historico de eventos</h4>
                                     </div>
 
-
                                     @if(isset($event->log))
                                         <div class="col-sm-12 d-flex flex-row">
                                             <ul style="list-style:none;overflow:auto;max-height:600px" class="w-100 p-0 m-0">
@@ -366,6 +365,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
