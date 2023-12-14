@@ -302,11 +302,11 @@
 <div id="toast-container" class="toast-container"></div>
 <div class="app-content">
     <div class="content-wrapper">
-        <div class="container">
+        <div class="">
             <div class="row">
                 <div class="col">
-                    <div class="page-description page-description-tabbed">
-                        <h1 class="d-flex align-items-center"> Mensagens automáticas </h1>
+                    <div class="page-description pt-2 ps-0 pb-0 page-description-tabbed">
+                        <h1 class="d-flex align-items-center pt-0"> Mensagens automáticas </h1>
                         <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
                             <li class="nav-item " role="presentation">
                                 <button  class="nav-link active text-success border-success d-flex align-items-center" id="andamento-tab" data-bs-toggle="tab" data-bs-target="#andamento" type="button" role="tab" aria-controls="security" aria-selected="false"><i style=" font-size: 14px; " class="material-icons me-1">cached</i> Em andamento </button>
@@ -339,7 +339,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="novo" role="tabpanel" aria-labelledby="novo-tab">
-                            <div class="card">
+                            <div class="card col-sm-5">
                                 <div class="card-body">
                                     @include('pages.events.onNew.index')
                                 </div>

@@ -1,9 +1,90 @@
 @extends('main._index')
 
 @section('css')
+<style>
+
+    .btn-close {
+        width: 0.3em!important;
+        height: 0.3em!important;
+    }
+
+</style>
 @endsection
 
 @section('js')
+
+
+<script>
+
+    $("form[name='submit-user-update']").on('submit', (e) => {
+        event.preventDefault();
+        const form = $(e.target);
+
+        const data = [
+            form.find("input[name='settingsInputFirstName']"),
+            form.find("input[name='settingsInputEmail']"),
+            form.find("input[name='password']"),
+            form.find("input[name='password_confirmation']"),
+        ];
+
+        data.forEach((item) => {
+            if(item.value===""){
+                item.addClass("is-invalid");
+            }else{
+                item.removeClass("is-invalid");
+            }
+
+
+            if(item.getAttribute('type')==="email"){
+
+            }
+        });
+
+        if(data.name == "" || data.email == ""){
+            showCustomToast("danger", {
+                title: "Algo deu errado",
+                message: "Os campos nome e e-mail são obrigatórios",
+            });
+            return false;
+        }
+
+
+
+        if(data.password != data.password_confirmation){
+            showCustomToast("danger", {
+                title: "Algo deu errado",
+                message: "As senhas devem ser iguais",
+            });
+            return false;
+        }
+
+        $.ajax({
+            url: "{{route('user.update')}}",
+            type: "PUT",
+            data: data,
+            success: (response) => {
+                console.log(response);
+                if (response.status == 200) {
+                    showCustomToast("success", {
+                        title: "Uhuul!",
+                        message: "Usuário atualizado com sucesso",
+                    });
+                } else {
+                    showCustomToast("danger", {
+                        title: "Algo deu errado",
+                        message: "Usuário atualizado com sucesso",
+                    });
+                }
+            },
+            error: (response) => {
+                showCustomToast("danger", {
+                    title: "Algo deu errado",
+                    message: "Usuário atualizado com sucesso",
+                });
+            }
+        })
+    })
+</script>
 @endsection
 
 @section('content')
@@ -35,33 +116,35 @@
                             <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label for="settingsInputFirstName" class="form-label">Nome <code>*</code></label>
-                                                <input value="{{\Illuminate\Support\Facades\Auth::user()["name"]}}" type="text" class="form-control" id="settingsInputFirstName" placeholder="John">
+                                        <form name="submit-user-update" action="">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="name" class="form-label">Nome <code>*</code></label>
+                                                    <input value="{{\Illuminate\Support\Facades\Auth::user()["name"]}}" type="text" class="form-control" id="name" name="name" placeholder="John">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="email" class="form-label">E-mail <code>*</code></label>
+                                                    <input value="{{\Illuminate\Support\Facades\Auth::user()["email"]}}" type="email" class="form-control" name="email" id="email" placeholder="examplo@exemplo.com">
+                                                    <div id="settingsEmailHelp" class="form-text">O e-mail deve ser válido</div>
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label for="settingsInputEmail" class="form-label">E-mail <code>*</code></label>
-                                                <input value="{{\Illuminate\Support\Facades\Auth::user()["email"]}}" type="email" class="form-control" placeholder="examplo@exemplo.com">
-                                                <div id="settingsEmailHelp" class="form-text">O e-mail deve ser válido</div>
+                                            <div class="row mt-4">
+                                                <div class="col-md-6">
+                                                    <label for="settingsInputFirstName" class="form-label">Senha</label>
+                                                    <input type="password" class="form-control" name="password" placeholder="**********">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="settingsInputEmail" class="form-label">Confirmar senha</label>
+                                                    <input type="password" class="form-control" placeholder="**********">
+                                                    <div id="settingsEmailHelp" class="form-text">As duas senha devem ser iguais</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row mt-4">
-                                            <div class="col-md-6">
-                                                <label for="settingsInputFirstName" class="form-label">Senha</label>
-                                                <input type="password" class="form-control" name="password" placeholder="**********">
+                                            <div class="row m-t-lg">
+                                                <div class="col">
+                                                    <button type="submit" class="btn btn-primary m-t-sm">Atualizar</button>
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label for="settingsInputEmail" class="form-label">Confirmar senha</label>
-                                                <input type="password" class="form-control" placeholder="**********">
-                                                <div id="settingsEmailHelp" class="form-text">As duas senha devem ser iguais</div>
-                                            </div>
-                                        </div>
-                                        <div class="row m-t-lg">
-                                            <div class="col">
-                                                <a href="#" class="btn btn-primary m-t-sm">Atualizar</a>
-                                            </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

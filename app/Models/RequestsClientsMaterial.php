@@ -9,5 +9,18 @@ class RequestsClientsMaterial extends Model
 {
     use HasFactory;
 
-    protected $table = "requests_clients_material";
+    // The name of the table has change from "requests_clients_material" to "requests_clients_article"
+    protected $table = "requests_clients_article";
+
+    public function clients(){
+        return $this->hasOne(RequestsClients::class , "id" , "client");
+    }
+
+    public function submissions(){
+        return $this->hasOne(RequestsClientsSubmission::class , "client" , "client");
+    }
+
+    public function address(){
+        return $this->hasOne(RequestsClientsAddress::class , "client" , "client");
+    }
 }

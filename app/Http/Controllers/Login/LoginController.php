@@ -11,55 +11,46 @@ use App\Models\Alog;
 class LoginController extends Controller
 {
     public function index(){
-        if(auth()->check()){
+        if(auth('dashboard')->check()){
             return redirect()->route("home");
         }
         return view("pages.login.index");
     }
 
-    public function store(Request $request){
-        try{
+    public function store(Request $request)
+    {
+        try {
             $request->validate([
                 'email' => 'required|email',
-                'password' => 'required'
+                'password' => 'required',
             ], [
                 'email.required' => 'Esse campo de email é obrigatório',
                 'email.email' => 'Esse campo de email deve ser válido',
                 'password.required' => 'Esse campo de senha é obrigatório',
             ]);
 
-            $user = User::where('email', $request->input('email'))->first();
+            $credentials = $request->only('email', 'password');
 
-            if(!$user){
-                return redirect()->route('login.index')->withErrors(['error' => 'Não encontramos nenhum usuário com esse email']);
-            }
+            if (Auth::guard('dashboard')->attempt($credentials, $request->filled('remember'))) {
+                $user = Auth::guard('dashboard')->user();
 
-            if(!Hash::check($request->input('password'), $user->password)){
-                return redirect()->route('login.index')->withErrors(['error' => 'Não encontramos nenhum usuário com esses dados']);
-            }
+                $saveInLog = new Alog();
+                $saveInLog->user = auth()->id();
+                $saveInLog->message = "O usuário [#".$user->id." ".$user->name."] fez login";
+                $saveInLog->ip = request()->ip();
+                $saveInLog->save();
 
-            if($request->filled('remember')){
-                Auth::login($user, true);
-                Auth::guard('web')->viaRemember((1.440*7)); // 7 dias
+                return redirect()->route('home');
             } else {
-                Auth::login($user);
-                Auth::guard('web')->viaRemember(1.440); // 24 horas
+                return redirect()->route('login.index')->withErrors(['error' => 'Credenciais inválidas.']);
             }
-
-            $saveInLog = new Alog();
-            $saveInLog->user = Auth::user()["id"];
-            $saveInLog->message = "O usuário [#".$user->id." ".$user->name."] fez login";
-            $saveInLog->ip = $_SERVER['REMOTE_ADDR'];
-            $saveInLog->save();
-
-            return redirect()->route('home');
-        }catch(\PDOException $pdoException){
-            return redirect()->route('login.index')->withErrors(['error' => 'Não conseguimos processar o seu login, consulte o suporte tecnico e/ou tente novamente mais tarde']);
+        } catch (\PDOException $pdoException) {
+            return redirect()->route('login.index')->withErrors(['error' => 'Não conseguimos processar o seu login, consulte o suporte técnico e/ou tente novamente mais tarde']);
         }
     }
 
     public function destroy(){
-        Auth::logout();
+        Auth::guard('dashboard')->logout();
         return redirect()->route("login.index");
     }
 }

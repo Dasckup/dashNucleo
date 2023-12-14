@@ -38,7 +38,7 @@
                 <td>
                     <div class="spinner-grow text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
-                      </div>
+                    </div>
                 </td>
                 <td >
                     {{ $response->groups->label }}
@@ -60,7 +60,7 @@
                 <td>
                     <div class="text-center">
                         @if($response->limit)
-                            <span class="badge badge-success">{{ $response->limit }}</span>
+                            <span class="badge badge-success">{{ $response->limit }} ciclo(s)</span>
                         @else
                             <span class="badge badge-success">Sem limite</span>
                         @endif

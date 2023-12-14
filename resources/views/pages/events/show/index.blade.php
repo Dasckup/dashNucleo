@@ -180,48 +180,43 @@
         })
     });
 </script>
+
+@if(session('success'))
+<script>
+    $(document).ready(function(){
+        showCustomToast("success", {
+            title: "Uhuu!",
+            message: "Evento editado com sucesso!",
+        });
+    })
+</script>
+@endif
+
+@if(session('error'))
+<script>
+    $(document).ready(function(){
+        showCustomToast("danger", {
+            title: "Algo deu errado",
+            message: "Não foi possivel editar o evento...",
+        });
+    })
+</script>
+@endif
+
 @endsection
 
 @section('content')
 
 <div class="app-content">
     <div class="content-wrapper">
-        <div class="container">
+
             <div class="row">
                 <div class="col">
 
-                    <div class="page-description">
-                        <h1 class="d-flex align-items-center"> Editar evento </h1>
-                    </div>
 
-                    @if(session('success'))
-                        <div class="alert alert-custom position-relative" role="alert">
-                            <div class="position-absolute me-2" style="right:0px">
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <div class="custom-alert-icon icon-success"><i class="material-icons-outlined">done</i></div>
-                            <div class="alert-content">
-                                <span class="alert-title">Evento editado com sucesso!</span>
-                                <span class="alert-text">As alterações entraram em vigor a partir do próximo ciclo</span>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div class="alert alert-custom position-relative" role="alert">
-                            <div class="position-absolute me-2" style="right:0px">
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <div class="custom-alert-icon icon-danger"><i class="material-icons-outlined">close</i></div>
-                            <div class="alert-content">
-                                <span class="alert-title">Não foi possivel editar o evento...</span>
-                                <span class="alert-text">Algo deu errado, tente novamente mais tarde e/ou consulte o suporte técnico</span>
-                            </div>
-                        </div>
-                    @endif
 
                     <div class="row">
-                        <div class="col-sm-7">
+                        <div class="col-sm-5">
                             <div class="card">
                                 <div class="card-body">
                                     <form method="POST" action="{{route('events.update', ['event' => $event->id])}}">
@@ -248,7 +243,7 @@
                                         <div class="col-sm-12 mb-3">
                                             <label class="form-label">Enviar para:</label>
                                             <h4 style=" font-weight: bold; ">
-                                                Pendentes
+                                                {{$event->groups->label}}
                                             </h4>
                                         </div>
                                         <br />
@@ -336,7 +331,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-4">
                             <div class="card">
                                 <div class="card-body">
 
@@ -456,7 +451,7 @@
 
                 </div>
             </div>
-        </div>
+
     </div>
 </div>
 

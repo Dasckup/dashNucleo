@@ -46,7 +46,18 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'dashboard' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'authorAccess' => [
+            'driver' => 'session',
+            'provider' => 'authorAccess',
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -69,6 +80,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'authorAccess' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\AuthorAccess::class,
         ],
 
         // 'users' => [

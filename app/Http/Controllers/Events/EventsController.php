@@ -58,7 +58,7 @@ class EventsController extends Controller
             $event->message = $request->message;
             $event->infinit = $request->infinit_mode==="on"?true:false;
             $event->active = true;
-            $event->limit = $request->limit;
+            $event->limit = $request->limit_ciclo;
             $event->on = $getDate;
             $event->on_date = $request->send_on_date;
             $event->on_date_amount = $request->send_on_date_amount;
@@ -215,7 +215,6 @@ class EventsController extends Controller
                     $event->limit = $event->limit - 1;
                     if($event->limit == 0){
                         $event->active = false;
-
                         $eventLog = new EventsLog();
                         $eventLog->events = $event->id;
                         $eventLog->message = 'Evento finalizado por limite de envios';
@@ -262,8 +261,8 @@ class EventsController extends Controller
                         $updateLog = new EventsLogMessageSended();
                         $updateLog->events = $event->id;
                         $updateLog->log = $eventLog->id;
-                        $updateLog->name = $clientData['name'];
-                        $updateLog->cellphone = $clientData['cellphone'];
+                        $updateLog->client_name = $clientData['name'];
+                        $updateLog->client_cellphone = $clientData['cellphone'];
                         $updateLog->message = $clientData['message'];
                         $updateLog->save();
                     }
@@ -357,6 +356,7 @@ class EventsController extends Controller
         $message = str_replace('{name}', $capitalizedName, $message);
 
         return [
+            'name' => $name,
             'message' => $message,
             'cellphone' => $ddi . $phoneNumber
         ];
@@ -392,14 +392,16 @@ class EventsController extends Controller
                 $eventsIntentionConfig = $event->intentions;
                 if(isset($intentions)){
                     foreach($intentions as $key => $intention){
-                        if($eventsIntentionConfig->only_not_contact_returned){
-                            if($intention->returned){
-                                continue;
+                        if($eventsIntentionConfig){
+                            if($eventsIntentionConfig->only_not_contact_returned){
+                                if($intention->returned){
+                                    continue;
+                                }
                             }
-                        }
-                        if($eventsIntentionConfig->only_intention_not_contacted){
-                            if($intention->contacts->count() > 0){
-                                continue;
+                            if($eventsIntentionConfig->only_intention_not_contacted){
+                                if($intention->contacts->count() > 0){
+                                    continue;
+                                }
                             }
                         }
 
@@ -579,7 +581,7 @@ class EventsController extends Controller
             }
 
             $event->infinit = $request->infinit_mode==="on"?true:false;
-            $event->limit = $request->limit;
+            $event->limit = $request->limit_ciclo;
             $event->on_date = $request->send_on_date;
             $event->on_date_amount = $request->send_on_date_amount;
             $event->only_bussines_days = $request->only_bussines_days==="on"?true:false;

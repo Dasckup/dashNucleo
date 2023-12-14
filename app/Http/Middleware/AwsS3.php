@@ -9,13 +9,13 @@ class AwsS3{
     public function __construct()
     {
         $credentials = new Credentials(
-            env("AWS_ACCESS_KEY_ID"),
-            env("AWS_SECRET_ACCESS_KEY")
+            "AKIAQOM5IBHQNOHEFOX5",
+            "kP5oHwmdWmRuv4KiHU1MeNygYrPr6sja5crN5zni"
         );
 
         $this->s3 = new S3Client([
             'version' => 'latest',
-            'region'  => env("AWS_DEFAULT_REGION"),
+            'region'  => "us-east-2",
             'credentials' => $credentials,
         ]);
 
@@ -26,7 +26,7 @@ class AwsS3{
 
     public function publish($filename, $content){
         try {
-            $bucket = env("AWS_BUCKET");
+            $bucket = "clients-revi-nc-apply-articles";
             $key = date("Y/m").'/'.$filename;
             $this->s3->putObject([
                 'Bucket' => $bucket,
@@ -42,14 +42,14 @@ class AwsS3{
     static public function getFile($objUrl){
         $s3 = new S3Client([
             'version' => 'latest',
-            'region' => env("AWS_DEFAULT_REGION"),
+            'region' => "us-east-2",
             'credentials' => [
-                'key'    => env("AWS_ACCESS_KEY_ID"),
-                'secret' => env("AWS_SECRET_ACCESS_KEY"),
+                'key'    => "AKIAQOM5IBHQNOHEFOX5",
+                'secret' => "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",
             ],
         ]);
 
-        $bucket = env("AWS_BUCKET");
+        $bucket = "clients-revi-nc-apply-articles";
         $objectKey = str_replace("https://".$bucket.".s3.amazonaws.com/","", $objUrl);
 
         $expires = 3600*24; // 1 hora

@@ -23,8 +23,14 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("/template/assets/css/plugin.css")}}">
     <link rel="stylesheet" href="{{asset("/template/assets/css/theme.css")}}">
+    <link rel="stylesheet" href="{{asset("/template/assets/css/toastfy2.css")}}">
     @yield('css')
 
+    <style>
+        body{
+            background: #e7ecf8!important;
+        }
+    </style>
 </head>
 <body>
     <div id="loader-wrapper" class="loader-wrapper">
@@ -34,12 +40,14 @@
     </div>
 
 
-    <div class="app horizontal-menu align-content-stretch d-flex flex-wrap">
+    <div class="app align-content-stretch d-flex flex-wrap">
+        @include('main.Header.index')
+
         <div class="app-container">
-            @include('main.Header.index')
-                @yield('content')
-            @include('main.Footer.index')
+            @include('main.Header.navbar')
+            @yield('content')
         </div>
+
     </div>
 
 
@@ -48,6 +56,8 @@
 
 <script src="{{asset("/template/assets/js/plugin.js")}}"></script>
 <script src="{{asset("/template/assets/js/theme.js")}}"></script>
+<script src="{{asset("/template/assets/js/toastfy.js")}}"></script>
+
 <script>
     // Seu código JavaScript
 

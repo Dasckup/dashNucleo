@@ -174,12 +174,12 @@
 
     <div class="app-content">
         <div class="content-wrapper">
-            <div class="container">
+            <div class="">
                 <div class="row">
                     <div class="col">
-                        <div class="page-description">
+                        <div class="page-description pt-2 ps-0 pb-0 border-0">
                             <h1>Intensões de submissão</h1>
-                            <span>Encontre detalhes importantes de autores que não terminram sua submissão.</span>
+                            <span style="margin-top: 10px;">Encontre detalhes importantes de autores que não terminram sua submissão.</span>
                         </div>
                     </div>
                 </div>
@@ -246,7 +246,6 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-body" style=" overflow: auto; ">
-
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
                                         <tr>

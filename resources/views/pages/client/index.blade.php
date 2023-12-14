@@ -3,7 +3,6 @@
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-
 <style>
     .dropdown-item{
         cursor: pointer;
@@ -64,18 +63,16 @@
 @section('content')
     <div class="app-content">
         <div class="content-wrapper">
-            <div class="container">
                 <div class="row">
                     <div class="col">
-                        <div class="page-description">
-                            <h1>Submissões <span class="text-lowercase text-<?= $status["bg"] ?>"><?=$status["title"]?></span></h1>
-                            <span>Encontre detalhes importantes de contato e perfis de forma eficiente.</span>
+                        <div class="page-description pt-2 ps-0 pb-0 border-0">
+                            <h1>Submissões <span class="text-lowercase text-<?= $status["bg"] ?>"><?=$status["title"]?></span></span></h1>
+                            <span style="margin-top: 10px;">Encontre detalhes importantes de contato e perfis de forma eficiente.</span>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div id="display-alert" class="col-sm-12">
-
                     </div>
                 </div>
                 <div class="row">
@@ -84,15 +81,15 @@
                             <div id="blockui-card-1" class="card-body">
                                 <table id="datatable1" class="display table align-middle  table-bordered border-primary" style="width:100%">
                                     <thead>
-                                    <tr>
-                                        <th style="width:0%;" class="text-center d-none">#</th>
-                                        <th style="width:4%" class="text-center">Status</th>
-                                        <th style="width:25%">Submissor</th>
-                                        <th style="width:19%">Produto/Prazo</th>
-                                        <th style="width:25%">Contato</th>
-                                        <th style="width:15%" >data de submissão</th>
-                                        <th style="width:13%" class="text-center">Ações</th>
-                                    </tr>
+                                        <tr>
+                                            <th style="width:0%;" class="text-center d-none">#</th>
+                                            <th style="width:4%" class="text-center">Status</th>
+                                            <th style="width:25%">Submissor</th>
+                                            <th style="width:19%">Produto/Prazo</th>
+                                            <th style="width:25%">Contato</th>
+                                            <th style="width:15%" >data de submissão</th>
+                                            <th style="width:13%" class="text-center">Ações</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($data as $reponse)
@@ -197,7 +194,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="">
+                                            <td>
                                                 <div class="d-flex align-items-center">
                                                     <div>
                                                         <p class="m-0 text-black title-row-in-table">{{date("d/m/Y", strtotime($client->created_at))}}</p>
@@ -216,7 +213,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 @endsection

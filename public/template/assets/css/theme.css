@@ -678,9 +678,9 @@ table.dataTable td, table.dataTable th {
     color: #717171;
 }
 
-.dataTables_filter#datatable1_filter label,
-.dataTables_length#datatable1_length label,
-.dataTables_info#datatable1_info{
+.dataTables_filter label,
+.dataTables_length label,
+.dataTables_info{
     font-size: 12.7px;
     font-weight: 600;
     color: #717171;

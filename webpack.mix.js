@@ -20,6 +20,10 @@ mix.
         'resources/assets/plugins/datatables/datatables.min.css',
     ] , 'public/template/assets/css/plugin.css')
     .styles([
+        'resources/assets/plugins/toastfy/css/toastify.css',
+    ] , 'public/template/assets/css/toastfy2.css')
+
+    .styles([
         'resources/assets/css/main.min.css',
         'resources/assets/css/horizontal-menu/horizontal-menu.css',
         'resources/assets/css/custom.css',
@@ -51,6 +55,11 @@ mix.
         'resources/assets/plugins/blockUI/jquery.blockUI.min.js',
         'resources/assets/js/pages/blockui.js',
     ], 'public/template/assets/js/blockui.js')
+
+    .scripts([
+        'resources/assets/plugins/toastfy/toastify-js.js',
+        'resources/assets/plugins/toastfy/toastfy.js',
+    ], 'public/template/assets/js/toastfy.js')
 
     .scripts([
         'resources/assets/js/main.min.js',

@@ -1,6 +1,6 @@
 <form name="newEvent">
     @csrf
-    <div class="col-sm-8">
+    <div class="col-sm-12">
         <div class="row">
             <div class="col-md-12">
                 <label for="settingsInputFirstName" class="form-label">Para: <code>*</code></label>

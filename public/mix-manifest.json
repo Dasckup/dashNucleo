@@ -1,10 +1,12 @@
 {
     "/template/assets/css/plugin.css": "/template/assets/css/plugin.css",
+    "/template/assets/css/toastfy2.css": "/template/assets/css/toastfy2.css",
     "/template/assets/css/theme.css": "/template/assets/css/theme.css",
     "/template/assets/js/plugin.js": "/template/assets/js/plugin.js",
     "/template/assets/js/maps.js": "/template/assets/js/maps.js",
     "/template/assets/js/apexcharts.js": "/template/assets/js/apexcharts.js",
     "/template/assets/js/datatables.js": "/template/assets/js/datatables.js",
     "/template/assets/js/blockui.js": "/template/assets/js/blockui.js",
+    "/template/assets/js/toastfy.js": "/template/assets/js/toastfy.js",
     "/template/assets/js/theme.js": "/template/assets/js/theme.js"
 }
