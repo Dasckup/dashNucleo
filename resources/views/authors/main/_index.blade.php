@@ -25,6 +25,14 @@
     <link rel="stylesheet" href="{{asset("/template/assets/css/theme.css")}}">
     <link rel="stylesheet" href="{{asset("/template/assets/css/toastfy2.css")}}">
 
+    <style>
+        @media (max-width: 576px) {
+            .app-container {
+                padding: 0px 20px 0px 20px!important;
+            }
+        }
+    </style>
+
     @yield('css')
 
 </head>

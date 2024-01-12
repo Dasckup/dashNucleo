@@ -8,7 +8,7 @@
     <meta name="description" content="Responsive Admin Dashboard Template">
     <meta name="keywords" content="admin,dashboard">
     <meta name="author" content="stacks">
-    <link rel="icon" href="{{asset("/template/assets/images/icons/logo_favicon.ico")}}" />
+    <link rel="icon" href="{{custom_asset("/template/assets/images/icons/logo_favicon.ico")}}" />
     <!-- The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
@@ -21,14 +21,13 @@
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{asset("/template/assets/css/plugin.css")}}">
-    <link rel="stylesheet" href="{{asset("/template/assets/css/theme.css")}}">
+    <link rel="stylesheet" href="{{custom_asset("/template/assets/css/plugin.css")}}">
+    <link rel="stylesheet" href="{{custom_asset("/template/assets/css/theme.css")}}">
 </head>
 
     <body>
     <div class="app horizontal-menu app-auth-sign-in align-content-stretch d-flex flex-wrap justify-content-end">
         <div class="app-auth-background">
-
         </div>
         <div class="app-auth-container position-relative">
             <div class="col-sm-12 position-relative">
@@ -87,8 +86,8 @@
             </div>
             <div class="divider"></div>
             <div class="auth-alts d-flex justify-content-center">
-                <a target="_blank" href="https://www.dasckup.com" class="auth-alts-google" style="background-image: url('http://localhost:8000/template/assets/images/icons/logo_favicon.png');background-size: 100%;width: 40px;height: 40px;"></a>
-                <a target="_blank" href="https://www.nucleodoconhecimento.com.br/" class="auth-alts-google" style="background-image: url('http://localhost:8000/template/assets/images/icons/nucleologo.png');background-size: 100%;width: 40px;height: 40px;"></a>
+                <a target="_blank" href="https://www.dasckup.com" class="auth-alts-google" style="background-image: url('{{custom_asset("/template/assets/images/icons/logo_favicon.png")}}');background-size: 100%;width: 40px;height: 40px;"></a>
+                <a target="_blank" href="https://www.nucleodoconhecimento.com.br/" class="auth-alts-google" style="background-image: url('{{custom_asset("/template/assets/images/icons/nucleologo.png")}}');background-size: 100%;width: 40px;height: 40px;"></a>
             </div>
 
             </form>
@@ -101,5 +100,5 @@
 
     </body>
 </html>
-<script src="{{asset("/template/assets/js/plugin.js")}}"></script>
-<script src="{{asset("/template/assets/js/theme.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/plugin.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/theme.js")}}"></script>

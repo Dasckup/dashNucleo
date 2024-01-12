@@ -56,6 +56,14 @@ return [
             'driver' => 'session',
             'provider' => 'authorAccess',
         ],
+        'editorAccess' => [
+            'driver' => 'session',
+            'provider' => 'editorAccess',
+        ],
+        'moderatorAccess' => [
+            'driver' => 'session',
+            'provider' => 'moderatorAccess',
+        ],
     ],
 
 
@@ -85,7 +93,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\AuthorAccess::class,
         ],
-
+        'editorAccess' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\EditorsAccess::class,
+        ],
+        'moderatorAccess' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ModeratorAccess::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

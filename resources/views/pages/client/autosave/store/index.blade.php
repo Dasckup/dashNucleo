@@ -4,7 +4,7 @@
 @endsection
 
 @section('js')
-    <script src="{{asset("/template/assets/js/datatables.js")}}"></script>
+    <script src="{{custom_asset("/template/assets/js/datatables.js")}}"></script>
 @endsection
 
 @section('content')

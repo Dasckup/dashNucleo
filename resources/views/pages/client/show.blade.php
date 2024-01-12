@@ -1,11 +1,198 @@
 @extends('main._index')
 
 @section('css')
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
+    <style>
+            .event-line-icon-top {
+        position: absolute;
+        top: 0px;
+        left: -8px;
+        font-size: 19px;
+        border-radius: 100%;
+        color: #A6A6A6;
+    }
+
+    .event-line-icon-bottom {
+        position: absolute;
+        bottom: 0px;
+        left: -8px;
+        font-size: 19px;
+        border-radius: 100%;
+        color: #A6A6A6;
+    }
+
+    .events-line-background{
+        background: #A6A6A6;
+        height: 100%;
+        width: 100%;
+    }
+
+    .events-line{
+        height: auto;
+        width: 3px;
+        padding: 15px 0px 15px 0px;
+        margin-top: 3px;
+        margin-bottom: 11px;
+    }
+    .events {
+        display: flex;
+        padding: 0px 0px 5px 0px;
+    }
+
+    .file-card{
+        margin-left: -2px;
+        border: 1px solid #e7e7e7;
+        box-shadow: none;
+    }
+    .events-date{
+        font-weight: 500;
+        font-size: 12px;
+        color: #666;
+    }
+    .button-add-file{
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px;
+        margin-bottom: 25px;
+    }
+
+    .file-item-title{
+        max-width: 340px;
+        font-weight: 600!important;
+        min-width: 339px;
+        font-size: 12px!important;
+    }
+
+
+    #fileInput {
+      display: none;
+    }
+    #fileDrop {
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e7ecf8;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #535353;
+        border: 3px dashed transparent;
+        transition: all 0.3s ease;
+    }
+
+    #fileDrop:hover,
+    #fileDrop.dragover {
+      border-color: #ced5e1;
+    }
+
+    .title-form-upload-file{
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    div.is-invalid-file + div.invalid-feedback {
+      display: block;
+    }
+
+
+    .fileInfo-description{
+        margin-left: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fileInfo-description-filename{
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .fileInfo-description-filesize{
+        font-size: 11px;
+        color: #666;
+    }
+
+    .text-transform-capitalize{
+        text-transform: capitalize!important;
+    }
+
+    </style>
 @endsection
 
 @section('js')
 
+<script>
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function addDragoverClass() {
+      document.getElementById('fileDrop').classList.add('dragover');
+    }
+
+    function removeDragoverClass() {
+      document.getElementById('fileDrop').classList.remove('dragover');
+    }
+
+    function clickFileInput() {
+      document.getElementById('fileInput').click();
+    }
+
+    function validateAndShowFileInfo(event) {
+      const files = event.target.files;
+      const validFile = validateFiles(files);
+
+      if (validFile) {
+        showFileInfo(validFile);
+        document.getElementById('fileDrop').classList.remove('is-invalid-file');
+      } else {
+        document.getElementById('fileDrop').classList.add('is-invalid-file');
+        document.getElementById('fileInfo').innerHTML = ''; // Limpa informações anteriores
+      }
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      const droppedFiles = event.dataTransfer.files;
+      validateAndShowFileInfo(droppedFiles);
+    }
+
+    function validateFiles(files) {
+      // Filtra apenas os arquivos DOCX ou PDF
+      const allowedExtensions = ["docx", "pdf"];
+      const validFiles = Array.from(files).filter(file => {
+        const extension = file.name.split('.').pop().toLowerCase();
+        return allowedExtensions.includes(extension);
+      });
+
+      return validFiles[0];
+    }
+
+    function showFileInfo(file) {
+      const fileInfo = document.getElementById('fileInfo');
+
+      fileInfo.innerHTML = ''; // Limpa informações anteriores
+
+      const fileSizeKB = (file.size / 1024).toFixed(2);
+      const fileSizeMB = (fileSizeKB / 1024).toFixed(2);
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+
+      const fileInfoText = `
+          <div class="d-flex mt-3 align-items-center">
+              <img width="35px" height="35px" src="<?= custom_asset('/template/assets/images/icons/') ?>/${fileExtension}-icon.png" alt="">
+              <div class="fileInfo-description">
+                  <span class="fileInfo-description-filename">${file.name}</span>
+                  <span class="fileInfo-description-filesize">${fileSizeKB}KB</span>
+              </div>
+          </div>
+      `;
+      const fileInfoElement = document.createElement('p');
+      fileInfoElement.innerHTML = fileInfoText;
+
+      fileInfo.appendChild(fileInfoElement);
+    }
+  </script>
 @endsection
 
 @section('content')
@@ -23,7 +210,7 @@
                                         <div><i title="internacional" class="material-icons text-primary" style=" font-size: 32px; margin-right: 9px; margin-top: 12px; ">public</i></div>
                                         @endif
 
-                                        <div>
+                                        <div class="text-transform-capitalize">
                                             {{$client->name}} {{$client->last_name}} <span style="font-size: 16px">#{{$client->id}}</span>
                                         </div>
                                     </h1>
@@ -81,23 +268,10 @@
 
                                 <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address">
 
-                                    <?php
-                                        $number = \App\Http\Middleware\Cryptography::decrypt($client->address->number);
-                                        $address = \App\Http\Middleware\Cryptography::decrypt($client->address->address);
-                                    ?>
-
-                                    @if(!empty($client->address->zipcode))
-                                        <a target="_blank" class="d-flex align-items-center m-b-xxl" style="text-decoration: none;font-size: 12.5px;font-weight: 500;"
-                                        href="https://www.google.com.br/maps/place/{{$address}},+{{$number}},+{{$client->address->city}}+-+{{$client->address->state}},+{{$client->address->zipcode}}/">
-                                            <i class="material-icons me-2">share_location</i>    Acessar endereço via google maps
-                                        </a>
-                                   @endif
-
-
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-4">
                                             <label class="form-label">País</label>
-                                            <input readonly type="text" value="{{$client->address->country}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            <input readonly type="text" value="{{isset($client->address->country)?$client->address->country:"Brasil"}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
                                         </div>
                                         <div class="col-sm-4">
                                             <label class="form-label">CEP/Zipcode</label>
@@ -106,39 +280,78 @@
                                     </div>
 
 
-                                    <div class="row m-b-xxl">
-                                        <div class="col-sm-5">
-                                            <label  class="form-label">Endereço</label>
-                                            <input readonly type="text" value="{{$address}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label  class="form-label">Número</label>
-                                            <input readonly type="text" value="{{$number}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                        </div>
-                                    </div>
 
-                                    <div class="row m-b-xxl">
-                                        <div class="col-sm-4">
-                                            <label  class="form-label">Bairro</label>
-                                            <input readonly type="text" value="{{$client->address->neighborhood}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                    @if($client->address->addressline)
+                                        @php
+                                            $addressline2 = \App\Http\Middleware\Cryptography::decrypt($client->address->addressline);
+                                            $addressline1 = \App\Http\Middleware\Cryptography::decrypt($client->address->addressline2);
+                                        @endphp
+
+                                        <div class="row m-b-xxl">
+                                            <div class="col-sm-5">
+                                                <label  class="form-label">Cidade</label>
+                                                <input readonly type="text" value="{{$client->address->city}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label  class="form-label">Estado</label>
+                                                <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
                                         </div>
-                                        <div class="col-sm-4">
-                                            <label  class="form-label">Complemento</label>
-                                            <input readonly type="text" value="{{$client->address->complement}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+
+                                        <div class="row m-b-xxl">
+                                            <div class="col-sm-4">
+                                                <label  class="form-label">Linha de Endereço 1</label>
+                                                <input readonly type="text" value="{{$addressline1}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label  class="form-label">Linha de Endereço 2</label>
+                                                <input readonly type="text" value="{{$addressline2}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
                                         </div>
-                                    </div>
+
+                                    @else
+
+                                    @php
+                                        $number = \App\Http\Middleware\Cryptography::decrypt($client->address->number);
+                                        $address = \App\Http\Middleware\Cryptography::decrypt($client->address->address);
+                                    @endphp
+
+                                        <div class="row m-b-xxl">
+                                            <div class="col-sm-5">
+                                                <label  class="form-label">Endereço</label>
+                                                <input readonly type="text" value="{{$address}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label  class="form-label">Número</label>
+                                                <input readonly type="text" value="{{$number}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row m-b-xxl">
+                                            <div class="col-sm-4">
+                                                <label  class="form-label">Bairro</label>
+                                                <input readonly type="text" value="{{$client->address->neighborhood}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label  class="form-label">Complemento</label>
+                                                <input readonly type="text" value="{{$client->address->complement}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                        </div>
 
 
-                                    <div class="row m-b-xxl">
-                                        <div class="col-sm-6">
-                                            <label  class="form-label">Cidade</label>
-                                            <input readonly type="text" value="{{$client->address->city}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        <div class="row m-b-xxl">
+                                            <div class="col-sm-6">
+                                                <label  class="form-label">Cidade</label>
+                                                <input readonly type="text" value="{{$client->address->city}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <label  class="form-label">Estado</label>
+                                                <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                            </div>
                                         </div>
-                                        <div class="col-sm-2">
-                                            <label  class="form-label">Estado</label>
-                                            <input readonly type="text" value="{{$client->address->state}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
-                                        </div>
-                                    </div>
+                                    @endif
+
+
                                 </div>
                                 <div class="tab-pane fade" id="submission" role="tabpanel" aria-labelledby="submission">
                                     <div class="row m-b-xxl">
@@ -175,37 +388,168 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="material">
-                                    <div class="col-sm-7">
-                                        <label  class="form-label">Material enviado por {{$client->name}}:</label>
 
-                                        <div class="card file-manager-recent-item">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center">
-                                                    <i class="material-icons-outlined text-primary align-middle m-r-sm">description</i>
-                                                    <a href="#" class="file-manager-recent-item-title flex-fill">{{$client->material->name_material}}</a>
-                                                    <span class="p-h-sm">{{$client->material->size_material}}</span>
-                                                    <span class="p-h-sm text-muted">{{date("d-m-Y", strtotime($client->material->created_at))}}</span>
-                                                    <a target="_blank" href="{{\App\Http\Middleware\AwsS3::getFile($client->material->url_material)}}" class="file-manager-recent-file-actions" ><i class="material-icons">download</i></a>
+
+
+
+
+
+
+                                @php
+                                    function groupByDate($array) {
+                                        $result = [];
+                                        foreach ($array as $item) {
+                                            $date = date('Y-m-d', strtotime($item['created_at']));
+                                            if(date('d/m/Y', strtotime($item['created_at']))==date('d/m/Y')){
+                                                $date = 'Hoje';
+                                            }
+
+                                            $result[$date][] = $item;
+                                        }
+                                        return $result;
+                                    }
+
+                                    if($client->material->file_all_version){
+                                        $groupedData = groupByDate($client->material->file_all_version);
+                                    }else{
+                                        $groupedData = [];
+                                    }
+
+                                @endphp
+
+
+
+
+                                <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="material">
+
+                                    <a data-bs-toggle="modal" data-bs-target="#new-material-upload" class="btn btn-primary button-add-file">
+                                        Adicionar material
+                                    </a>
+
+                                    <div class="modal fade" id="new-material-upload" aria-hidden="true" aria-labelledby="..." tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+
+                                                    <h5 class="title-form-upload-file d-flex justify-content-between">
+                                                        <span>Enviar Material</span>
+                                                        <button style="font-size: 9px;" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </h5>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Nome do arquivo <code>*</code></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+
+                                                    <div class="mb-4">
+                                                        <label class="form-label w-100">
+                                                            Clique aqui ou arraste e solte o arquivo <code>*</code>
+                                                        </label>
+                                                        <div>
+                                                            <div id="fileDrop" ondrop="handleDrop(event)" ondragover="allowDrop(event)" ondragenter="addDragoverClass()" ondragleave="removeDragoverClass()" onclick="clickFileInput()">
+                                                                <span class="material-symbols-outlined" style="font-size: 35px;color: #666;">
+                                                                    upload_file
+                                                                </span>
+                                                                <input type="file" id="fileInput" onchange="validateAndShowFileInfo(event)" accept=".docx, .pdf"  style="display: none;">
+                                                            </div>
+                                                            <div class="invalid-feedback">
+                                                                O documento deve ser no formato ( docx, doc, pdf )
+                                                            </div>
+                                                        </div>
+                                                        <div id="fileInfo">
+                                                        </div>
+                                                    </div>
+
+                                                    <button class="btn btn-primary w-100" style="font-size: 12px">
+                                                        Enviar material
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    @if($client->material->url_photo&&$client->material->size_photo)
-                                        <div class="col-sm-7">
-                                            <label  class="form-label">Foto enviada por {{$client->name}}:</label>
-                                            <div class="card file-manager-recent-item">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="material-icons-outlined text-primary align-middle m-r-sm">image</i>
-                                                        <a href="#" class="file-manager-recent-item-title flex-fill">{{$client->material->name_photo}}</a>
-                                                        <span class="p-h-sm">{{$client->material->size_photo}}</span>
-                                                        <span class="p-h-sm text-muted">{{date("d-m-Y", strtotime($client->material->created_at))}}</span>
-                                                        <a target="_blank" href="{{\App\Http\Middleware\AwsS3::getFile($client->material->url_photo)}}" class="file-manager-recent-file-actions" ><i class="material-icons">download</i></a>
+
+
+                                    <div class="col-sm-7">
+                                        @if($client->material)
+                                            @if(count($groupedData)>0)
+                                                @foreach ($groupedData as $key => $fileList)
+                                                <div class="events">
+
+                                                    @if($key!=="Hoje")
+                                                        <div class="events-line position-relative">
+                                                            <span class="event-line-icon-top material-symbols-outlined">
+                                                                trip_origin
+                                                            </span>
+                                                            <div class="events-line-background"></div>
+                                                            <span class="event-line-icon-bottom material-symbols-outlined">
+                                                                trip_origin
+                                                            </span>
+                                                        </div>
+                                                    @endif
+
+
+                                                    <div class="d-flex flex-column" style="padding-left: 20px;">
+                                                        <div class="events-date mb-3"><?php echo $key === "Hoje" ? $key : \Carbon\Carbon::parse($key)->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') ?></div>
+                                                        @foreach ($fileList as $file)
+                                                        <div class="card file-card file-manager-recent-item">
+                                                            <div class="p-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div>
+                                                                        <i class="material-icons-outlined text-primary align-middle m-r-sm">description</i>
+                                                                    </div>
+                                                                    <div class="d-flex flex-column">
+                                                                        <span class="file-item-title flex-fill">
+                                                                            @if($file)
+                                                                                {{$file['label']}}
+                                                                            @endif
+                                                                        </span>
+                                                                        <span style="font-size: 11px;">
+                                                                            @if($file)
+                                                                                <span class="text-transform-capitalize">
+                                                                                    @if($file['users'])
+                                                                                        {{$file['users']['name']}}
+                                                                                    @else
+                                                                                        {{$client->name}}
+                                                                                    @endif
+                                                                                </span>
+                                                                            @endif
+                                                                        </span>
+                                                                    </div>
+                                                                    <a target="_blank" href="{{\App\Http\Middleware\AwsS3::getFile($file['url_material'])}}" class="file-manager-recent-file-actions" >
+                                                                        <span class="material-symbols-outlined">
+                                                                            download
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                </div>
+                                                @endforeach
+
+                                            @endif
+
+                                        @endif
+                                    </div>
+                                    @if($client->material)
+                                        @if($client->material->url_photo&&$client->material->size_photo)
+                                            <div class="col-sm-7">
+                                                <label  class="form-label">Foto enviada por {{$client->name}}:</label>
+                                                <div class="card file-manager-recent-item">
+                                                    <div class="card-body">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="material-icons-outlined text-primary align-middle m-r-sm">image</i>
+                                                            <a href="#" class="file-manager-recent-item-title flex-fill">{{$client->material->name_photo}}</a>
+                                                            <span class="p-h-sm">{{$client->material->size_photo}}</span>
+                                                            <span class="p-h-sm text-muted">{{date("d-m-Y", strtotime($client->material->created_at))}}</span>
+                                                            <a target="_blank" href="{{\App\Http\Middleware\AwsS3::getFile($client->material->url_photo)}}" class="file-manager-recent-file-actions" ><i class="material-icons">download</i></a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

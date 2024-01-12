@@ -2,7 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-<link rel="stylesheet" href="{{asset("/template/assets/app/css/autosave/style.css")}}" />
+<link rel="stylesheet" href="{{custom_asset("/template/assets/app/css/autosave/style.css")}}" />
 <style>
 .spinner-border {
     border-right-color: transparent!important;
@@ -18,7 +18,7 @@
 @endsection
 
 @section('js')
-<script src="{{asset("/template/assets/js/datatables.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/datatables.js")}}"></script>
 
 <script>
     function sendMessage() {
@@ -186,14 +186,14 @@
                                                 <button onclick="sendMessage()" style="font-size: 12px;font-weight:500" class="btn btn-success w-100">ENVIAR MENSAGEM</button>
                                             </p>
                                             <div class="w-100" style="overflow:auto;max-height: 400px;">
-                                                <table  class="display table align-middle  table-bordered border-primary" style="width:100%">
+                                                <table class="display table align-middle  table-bordered border-primary" style="width:100%">
                                                     <thead>
                                                         <tr>
                                                             <th>Nome</th>
                                                             <th>Celular</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody >
+                                                    <tbody>
                                                         @foreach($clients as $key => $client)
                                                             @if(preg_match("/^\(\d{2}\) \d{5}-\d{4}$/", $client->cellphone)&&$client->name != null)
                                                                 <tr class="mb-2">

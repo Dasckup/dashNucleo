@@ -7,12 +7,16 @@
     .dropdown-item{
         cursor: pointer;
     }
+
+    .alert-custom{
+        margin-bottom: 15px;
+    }
 </style>
 @endsection
 
 @section('js')
-    <script src="{{asset("/template/assets/js/datatables.js")}}"></script>
-    <script src="{{asset("/template/assets/js/blockui.js")}}"></script>
+    <script src="{{custom_asset("/template/assets/js/datatables.js")}}"></script>
+    <script src="{{custom_asset("/template/assets/js/blockui.js")}}"></script>
 
 
     <script>
@@ -35,22 +39,11 @@
                     "id": element.getAttribute('data-to')
                 },
                 success: (data) => {
-                    console.log(data);
                     $("#client-"+element.getAttribute('data-to')).remove();
-                    $("#display-alert").html(`
-                        <div class="alert alert-custom position-relative" role="alert">
-                            <div class="position-absolute me-2" style="right:0px">
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <div class="custom-alert-icon icon-success"><i class="material-icons-outlined">done</i></div>
-                            <div class="alert-content">
-                                <span class="alert-title" id="status-title">Status da submissão atualizado com sucesso</span>
-                                <span class="alert-text" id="status-submessage">
-                                    A submissão foi movida para aba de submissões <span class='text-${data.status.bs} text-captalize'>${data.status.status}</span>
-                                </span>
-                            </div>
-                        </div>
-                    `)
+                    showCustomToast("success", {
+                        title: "Status da submissão atualizado com sucesso",
+                        message: `A submissão foi movida para aba de submissões ${data.status.status}`,
+                    });
                 },
                 error: (data) => {
                     console.log(data);
@@ -66,7 +59,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="page-description pt-2 ps-0 pb-0 border-0">
-                            <h1>Submissões <span class="text-lowercase text-<?= $status["bg"] ?>"><?=$status["title"]?></span></span></h1>
+                            <h1>Submissões <span class="text-lowercase" style="color:var(--bs-<?= $status["bg"] ?>)!important"><?=$status["title"]?></span></span></h1>
                             <span style="margin-top: 10px;">Encontre detalhes importantes de contato e perfis de forma eficiente.</span>
                         </div>
                     </div>
@@ -105,28 +98,51 @@
                                                     <a style=" font-size: 13px; text-transform: uppercase;font-weight: 600" class="btn border-2 bg-transparent  text-@if($client->status){{$client->status->bs}}@endif border-@if($client->status){{$client->status->bs}}@endif dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                                         @if($client->status){{$client->status->status}}@endif
                                                     </a>
-                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    @php
+                                                    $routsStatus = [
+                                                        'pendente' => [
+                                                            'color' => 'warning',
+                                                            'title' => 'Pendente',
+                                                            'icon' => 'schedule'
+                                                        ],
+                                                        'aceito' => [
+                                                            'color' => 'info',
+                                                            'title' => 'Aceito',
+                                                            'icon' => 'done'
+                                                        ],
+                                                        'pago' => [
+                                                            'color' => 'success',
+                                                            'title' => 'Pago',
+                                                            'icon' => 'attach_money'
+                                                        ],
+                                                        'recusado' => [
+                                                            'color' => 'danger',
+                                                            'title' => 'Recusado',
+                                                            'icon' => 'playlist_remove'
+                                                        ],
+                                                        'pagamento_pendente' => [
+                                                            'color' => 'pink',
+                                                            'title' => 'Pagamento pendente',
+                                                            'icon' => 'schedule'
+                                                        ],
+                                                        'cancelado' => [
+                                                            'color' => 'gray',
+                                                            'title' => 'Cancelado',
+                                                            'icon' => 'close'
+                                                        ]
+                                                    ];
+                                                @endphp
+
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    @foreach($routsStatus as $status => $details)
                                                         <li>
-                                                            <a id="blockui-1" onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-warning" data-value="pendente" data-to="{{$client->id}}">
-                                                                <i class="material-icons me-2" style="font-size: 19px">schedule</i> Pendente
+                                                            <a onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center" style="color: var(--bs-{{ $details['color'] }})" data-value="{{ $status }}" data-to="{{ $client->id }}">
+                                                                <i class="material-icons me-2" style="font-size: 19px">{{ $details['icon'] }}</i> {{ $details['title'] }}
                                                             </a>
                                                         </li>
-                                                        <li>
-                                                            <a  onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-info" data-value="atendido" data-to="{{$client->id}}">
-                                                                <i class="material-icons me-2" style="font-size: 19px">done</i> Atendido
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex align-items-center text-success" data-value="pago" data-to="{{$client->id}}">
-                                                                <i class="material-icons me-2" style="font-size: 19px">attach_money</i> Pago
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a onclick="statusUpdate(this)" class="dropdown-item dropdown-item-select-status-client d-flex text-danger align-items-center" data-value="cancelado" data-to="{{$client->id}}">
-                                                                <i class="material-icons me-2" style="font-size: 19px">close</i> Cancelado
-                                                            </a>
-                                                        </li>
-                                                    </ul>
+                                                    @endforeach
+                                                </ul>
+
                                                 </div>
                                             </td>
                                             <td>

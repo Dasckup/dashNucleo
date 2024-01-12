@@ -12,7 +12,7 @@
             <div class="">
                 <div class="row">
                     <div class="col">
-                        <div class="page-description pt-2 ps-0 pb-0 ">
+                        <div class="page-description pt-2 ps-0">
                             <h1>Dashboard</h1>
                             <span style="margin-top: 10px;">Os relatórios apareceram aqui em breve... </span>
                         </div>

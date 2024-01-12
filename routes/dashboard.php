@@ -26,10 +26,18 @@ Route::middleware(['auth:dashboard'])->group(function () {
     Route::controller(Clients::class)->group(function () {
         Route::get('/submissoes', 'index')->name("client.index");
 
-        Route::get('/submissoes/pendente', 'index_pendente')->name("client.index.pendente");
-        Route::get('/submissoes/atendido', 'index_atendido')->name("client.index.atendido");
-        Route::get('/submissoes/pagas', 'index_pagas')->name("client.index.pagas");
-        Route::get('/submissoes/cancelados', 'index_cancelados')->name("client.index.cancelados");
+        $routsStatus = [
+            'pendente',
+            'aceitos',
+            'pagas',
+            'recusados',
+            'pagamento_pendentes',
+            'cancelados'
+        ];
+
+        foreach ($routsStatus as $status){
+            Route::get('/submissoes/'.$status, 'index_'.$status)->name("client.index.".$status);
+        }
 
         Route::get('/submissoes/{id}/{status}', 'update')->name("client.update");
         Route::post('/submissoes/update_status/', 'updateStatus')->name("client.update.status");

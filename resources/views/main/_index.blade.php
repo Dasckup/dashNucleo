@@ -8,7 +8,7 @@
     <meta name="description" content="Responsive Admin Dashboard Template">
     <meta name="keywords" content="admin,dashboard">
     <meta name="author" content="stacks">
-    <link rel="icon" href="{{asset("/template/assets/images/icons/logo_favicon.ico")}}" />
+    <link rel="icon" href="{{custom_asset("/template/assets/images/icons/logo_favicon.ico")}}" />
 
 
     <!-- Title -->
@@ -21,15 +21,17 @@
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{asset("/template/assets/css/plugin.css")}}">
-    <link rel="stylesheet" href="{{asset("/template/assets/css/theme.css")}}">
-    <link rel="stylesheet" href="{{asset("/template/assets/css/toastfy2.css")}}">
+    <link rel="stylesheet" href="{{custom_asset("/template/assets/css/plugin.css")}}">
+    <link rel="stylesheet" href="{{custom_asset("/template/assets/css/theme.css")}}">
+    <link rel="stylesheet" href="{{custom_asset("/template/assets/css/toastfy2.css")}}">
     @yield('css')
 
     <style>
         body{
             background: #e7ecf8!important;
         }
+
+
     </style>
 </head>
 <body>
@@ -54,9 +56,9 @@
 </body>
 </html>
 
-<script src="{{asset("/template/assets/js/plugin.js")}}"></script>
-<script src="{{asset("/template/assets/js/theme.js")}}"></script>
-<script src="{{asset("/template/assets/js/toastfy.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/plugin.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/theme.js")}}"></script>
+<script src="{{custom_asset("/template/assets/js/toastfy.js")}}"></script>
 
 <script>
     // Seu código JavaScript

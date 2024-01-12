@@ -34,31 +34,44 @@ class ClientsController extends Controller
             return redirect()->route("client.index");
         }
 
-        switch ($status){
-            case "pendente":
-                $status = [
-                    "status" => "pendente",
-                    "bs" => "warning"
-                ];
-            break;
-            case "cancelado":
-                $status = [
-                    "status" => "cancelado",
-                    "bs" => "danger"
-                ];
-            break;
-            case "pago":
-                $status = [
-                    "status" => "pago",
-                    "bs" => "success"
-                ];
-            break;
-            default:
-                $status = [
-                    "status" => "atendido",
-                    "bs" => "info"
-                ];
-            break;
+        $statusData = [
+            'pendente' => [
+                'color' => 'warning',
+                'title' => 'pendente',
+            ],
+            'atendidos' => [
+                'color' => 'info',
+                'title' => 'atendido',
+            ],
+            'pago' => [
+                'color' => 'success',
+                'title' => 'pago',
+            ],
+            'cancelados' => [
+                'color' => 'danger',
+                'title' => 'cancelado',
+            ],
+            'pagamento_pendentes' => [
+                'color' => 'pink',
+                'title' => 'pagamento_pendente',
+            ],
+            'cancelados' => [
+                'color' => 'gray',
+                'title' => 'cancelado',
+            ],
+        ];
+
+        $statusKey = 'pendente';
+        if (array_key_exists($statusKey, $statusData)) {
+            $status = [
+                'status' => $statusKey,
+                'bs' => $statusData[$statusKey]['color'],
+            ];
+        } else {
+            $status = [
+                'status' => 'pendente',
+                'bs' => 'warning',
+            ];
         }
 
         $saveInLog = new Alog();
@@ -84,31 +97,45 @@ class ClientsController extends Controller
             return redirect()->route("client.index");
         }
 
-        switch ($status){
-            case "pendente":
-                $status = [
-                    "status" => "pendente",
-                    "bs" => "warning"
-                ];
-            break;
-            case "cancelado":
-                $status = [
-                    "status" => "cancelado",
-                    "bs" => "danger"
-                ];
-            break;
-            case "pago":
-                $status = [
-                    "status" => "pago",
-                    "bs" => "success"
-                ];
-            break;
-            default:
-                $status = [
-                    "status" => "atendido",
-                    "bs" => "info"
-                ];
-            break;
+
+        $statusData = [
+            'pendente' => [
+                'color' => 'warning',
+                'title' => 'pendente',
+            ],
+            'aceito' => [
+                'color' => 'info',
+                'title' => 'aceito',
+            ],
+            'pago' => [
+                'color' => 'success',
+                'title' => 'pago',
+            ],
+            'cancelados' => [
+                'color' => 'danger',
+                'title' => 'cancelado',
+            ],
+            'pagamento_pendentes' => [
+                'color' => 'pink',
+                'title' => 'pagamento_pendente',
+            ],
+            'cancelados' => [
+                'color' => 'gray',
+                'title' => 'cancelado',
+            ],
+        ];
+
+        $statusKey = $status;
+        if (array_key_exists($statusKey, $statusData)) {
+            $status = [
+                'status' => $statusKey,
+                'bs' => $statusData[$statusKey]['color'],
+            ];
+        } else {
+            $status = [
+                'status' => 'pendente',
+                'bs' => 'warning',
+            ];
         }
 
         $saveInLog = new Alog();
@@ -144,6 +171,9 @@ class ClientsController extends Controller
     }
 
 
+
+
+
     public function index_pendente(){
         $clients = RequestClientsStatus::where("status", "pendente")->with("clients")->orderBy("created_at","DESC")->get();
 
@@ -156,28 +186,59 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function index_atendido(){
-        $clients = RequestClientsStatus::where("status", "atendido")->with("clients")->orderBy("created_at","DESC")->get();
+
+    public function index_aceitos(){
+        $clients = RequestClientsStatus::where("status", "aceito")->with("clients")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Atendidas",
+                "title" => "Aceitas",
                 "bg" => "info"
             ]
         ]);
     }
 
+
     public function index_pagas(){
         $clients = RequestClientsStatus::where("status", "pago")->with("clients")->orderBy("created_at","DESC")->get();
+
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Pagas",
+                "title" => "pago",
                 "bg" => "success"
             ]
         ]);
     }
+
+
+    public function index_recusados(){
+        $clients = RequestClientsStatus::where("status", "recusado")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Recusadas",
+                "bg" => "danger"
+            ]
+        ]);
+    }
+
+
+    public function index_pagamento_pendentes(){
+        $clients = RequestClientsStatus::where("status", "pagamento_pendente")->with("clients")->orderBy("created_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "Com Pagamento Pendente",
+                "bg" => "pink"
+            ]
+        ]);
+    }
+
+
 
     public function index_cancelados(){
         $clients = RequestClientsStatus::where("status", "cancelado")->with("clients")->orderBy("created_at","DESC")->get();
@@ -185,11 +246,34 @@ class ClientsController extends Controller
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Canceladas",
-                "bg" => "danger"
+                "title" => "Cancelados",
+                "bg" => "gray"
             ]
         ]);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function send_message_to_client(){
         return view('pages.client.whatsapp.index');
     }
@@ -239,6 +323,29 @@ class ClientsController extends Controller
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function sendMessageToNewClientSecondTime(){
         $inicioDoisDiasAtras = date('Y-m-d 00:00:00', strtotime('-2 days'));
         $fimDoisDiasAtras = date('Y-m-d 23:59:59', strtotime('-2 days'));
@@ -278,6 +385,31 @@ class ClientsController extends Controller
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private function getMessage($name, $contact){
         switch($contact){

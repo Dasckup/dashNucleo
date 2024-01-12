@@ -23,4 +23,12 @@ class RequestsClientsMaterial extends Model
     public function address(){
         return $this->hasOne(RequestsClientsAddress::class , "client" , "client");
     }
+
+    public function file_last_version(){
+        return $this->hasOne(RequestsClientsFiles::class , "clients" , "client")->orderBy('created_at', 'DESC');
+    }
+
+    public function file_all_version(){
+        return $this->hasMany(RequestsClientsFiles::class , "clients" , "client")->with('users')->orderBy('created_at', 'DESC');
+    }
 }

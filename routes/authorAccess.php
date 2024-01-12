@@ -25,6 +25,9 @@ Route::middleware(['auth:authorAccess'])->group(function () {
 
     Route::controller(Material::class)->group(function (){
         Route::get('/author/material/{id}', 'show')->name("AppAuthor.material.show");
+        Route::post('/author/material/comment/toAnalysis', 'comment_store')->name("AppAuthor.material.comment.store");
+        Route::post('/author/material/{process}/comment/mark', 'comment_mark')->name("AppAuthor.material.comment.mark");
+        Route::post('/author/material/{process}/comment/report', 'report_store')->name("AppAuthor.material.report.store");
     });
 
     Route::get('/author/lang/{language}', function ($language) {
@@ -37,3 +40,5 @@ Route::middleware(['auth:authorAccess'])->group(function () {
         return redirect()->route('AppAuthor.home');
     })->name('AppAuthor.lang.change');
 });
+
+

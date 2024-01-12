@@ -28,7 +28,7 @@
     .proccess{
         height: 600px;
         width: 300px;
-        background: #f7f7f7;
+        background: #f4f4f4;
         margin-right: 13px;
         border-radius: 3px;
         padding: 0px
@@ -42,9 +42,20 @@
         font-weight: 600;
     }
 
-    .list-materials{
+    .list-materials {
         padding: 10px;
     }
+
+    .list-materials-row {
+        overflow: auto;
+        flex-wrap: nowrap!important;
+        padding-bottom: 10px;
+    }
+
+    .list-materials-row::-webkit-scrollbar {
+        height: 10px!important;
+    }
+
 
     .material {
         width: 100%;
@@ -52,8 +63,54 @@
         border-radius: 3px;
         margin-bottom: 10px;
         display: flex;
-        align-items: center;
+        flex-direction: column;
         padding: 15px;
+    }
+
+    .material-title{
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .material-deadline{
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .material-autor{
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .material-file-title{
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .material-file-size{
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .material-file-displayed-title{
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .link-icon-to-material{
+        color: #717171;
+        margin-top: 0px;
+        transition: color 0.3s ease-in-out;
+    }
+
+    .link-icon-to-material span{
+        font-size: 20px;
+    }
+
+    .link-icon-to-material:hover{
+        color: var(--bs-primary);
     }
 </style>
 @endsection
@@ -61,27 +118,25 @@
 @section('js')
 <script src="{{asset("/template/assets/js/datatables.js")}}"></script>
 
-    <script>
-        $(document).ready(function() {
-            $('#myMaterials').DataTable({
-                "language": {
-                    "sZeroRecords": "<?= __('messages.datatable.sZeroRecords') ?>",
-                    "paginate": {
-                        "next": ">",
-                        "previous": "<"
-                    },
-                    "info": "<?= __('messages.datatable.showing') ?> _START_ <?= __('messages.datatable.to') ?> _END_ <?= __('messages.datatable.of') ?> _TOTAL_",
-                    "sInfoEmpty": "<?= __('messages.datatable.showing') ?> 0 <?= __('messages.datatable.to') ?> 0 <?= __('messages.datatable.of') ?> 0",
-                    "infoFiltered": "(<?= __('messages.datatable.filtered_from') ?> _MAX_)",
-                    "decimal": ",",
-                    "thousands": ".",
-                    "lengthMenu": "<?= __('messages.datatable.showing') ?> _MENU_",
-                    "search": "<?= __('messages.datatable.search') ?>:"
-                },
-                "order": [[0, "desc"]]
+<script>
+        $(document).ready(function () {
+        $(".list-materials-row").on('mousedown', function (event) {
+            var startX = event.pageX;
+            var startScrollLeft = $(this).scrollLeft();
+
+            $(this).on('mousemove', function (event) {
+                var moveX = startScrollLeft - (event.pageX - startX);
+
+                $(this).scrollLeft(moveX);
+            });
+
+            $(document).on('mouseup', function () {
+                $(".list-materials-row").off('mousemove');
+                $(document).off('mouseup');
             });
         });
-    </script>
+    });
+</script>
 @endsection
 
 @section('content')
@@ -104,51 +159,50 @@
                     </div>
 
                     <div class="col-sm-12">
-                        <div class="row">
-                            <div class="proccess">
-                                <div class="process-title bg-primary">🧐 Processo de Analise</div>
-                                <div class="list-materials">
-                                    <div class="material">
-                                        <div class="d-flex">
-                                            <div class="me-2">
-                                                <img width="45px" height="45px" src="{{asset('/template/assets/images/icons/pdf-icon.png')}}">
+                        <div class="row list-materials-row">
+                            @foreach ($processes as $process)
+                                <div class="proccess">
+                                    <div class="process-title" style="background:{{$process->color}}">{{$process->label}}</div>
+                                    <div class="list-materials">
+                                        @foreach ($process->process_clients as $client)
+                                        <div class="material">
+                                            <div class="material-title d-flex aling-items-center">
+                                                Processo #{{$client->id}} <a class="ms-2 link-icon-to-material" href="{{route('AppAuthor.material.show' ,  ["id" => $client->id])}}"><span class="material-symbols-outlined"> bubble </span></a>
                                             </div>
-                                            <div>
-                                                <div class="text-black title-row-in-table">submitting article.pdf</div>
-                                                <div class="sub-title-row-in-table">10.87 KB</div>
+                                            <div class="material-deadline">
+                                                Prazo: <b>19 dias úteis ({{date('d/m/Y', strtotime($client->created_at. ' + '.$client->deadline_amount.' '.$client->deadline_type))}})</b>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="material">
-                                        <div class="d-flex">
-                                            <div class="me-2">
-                                                <img width="45px" height="45px" src="{{asset('/template/assets/images/icons/pdf-icon.png')}}">
+                                            <div class="material-autor">
+                                                Autor: {{$client->author->name}} {{$client->author->last_name}}
                                             </div>
-                                            <div>
-                                                <div class="text-black title-row-in-table">submitting article.pdf</div>
-                                                <div class="sub-title-row-in-table">10.87 KB</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="proccess">
-                                <div class="process-title bg-primary">🔍 Processo de Antiplagio</div>
-                                <div class="list-materials">
-                                </div>
-                            </div>
-                            <div class="proccess">
-                                <div class="process-title bg-primary">😁 Processo de Publicação</div>
-                                <div class="list-materials">
-                                </div>
-                            </div>
-                            <div class="proccess">
-                                <div class="process-title bg-success">🥳 Publicados</div>
-                                <div class="list-materials">
-                                </div>
-                            </div>
-                        </div>
 
+                                            <div class="mt-3 material-file-displayed-title">
+                                                Útima versão do artigo:
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-2">
+                                                        <img width="25px" height="25px" src="{{asset('/template/assets/images/icons/pdf-icon.png')}}">
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-black material-file-title">submitting article.pdf</div>
+                                                        <div class="material-file-size">10.87 KB</div>
+                                                    </div>
+                                                </div>
+                                                <div class="material-file-download">
+                                                    <a class="material-file-download-icon" href="#">
+                                                        <span class="material-symbols-outlined">
+                                                            download
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>

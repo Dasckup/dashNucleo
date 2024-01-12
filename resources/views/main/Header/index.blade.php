@@ -1,6 +1,11 @@
+@section('css')
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+@endsection
+
 <div class="app-sidebar">
     <div class="logo">
-        <a href="/" style="background-image:url('{{asset("/template/assets/images/icons/logo_favicon.ico")}}')" class="logo-icon">
+        <a href="/" style="background-image:url('{{custom_asset("/template/assets/images/icons/logo_favicon.ico")}}')" class="logo-icon">
             <span class="logo-text">Dasckup</span>
         </a>
         <div class="sidebar-user-switcher user-activity-online">
@@ -22,40 +27,51 @@
                 Vendas
             </li>
 
-            <li class="{{ request()->is('intencao-de-submissao') ? 'active-page' : '' }}">
-                <a class="" href="{{route("client.intention.index")}}">
-                    <i class="material-icons-two-tone" style=" font-size: 29px; margin-right: 8px; ">psychology_alt</i> Intenção de Submissão
+            <li class="@if(routeIs('client.intention.index')) active-page @endif">
+                <a style="color:var(--bs-)" href="{{ route('client.intention.index') }}">
+                    <i class="material-icons">psychology_alt</i> Intenção de Submissão
                 </a>
             </li>
 
-            <li class="{{ request()->is('submissoes/pendentes') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('submissoes/pendentes') ? 'active-page' : '' }} text-warning" href="{{route("client.index.pendente")}}">
-                    <i class="material-icons-two-tone">hourglass_top</i> Pendentes
+            <li class="@if(routeIs('client.index.pendente')) active-page @endif">
+                <a style="color:var(--bs-warning)" href="{{ route('client.index.pendente') }}">
+                    <i style="filter:none" class="material-icons">ring_volume</i> Pendentes
                 </a>
             </li>
 
-            <li class="{{ request()->is('submissoes/antendidos') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('submissoes/antendidos') ? 'active-page' : '' }} text-info" href="{{route("client.index.atendido")}}">
-                    <i class="material-icons-two-tone">ring_volume</i> Atendidos
+            <li class="@if(routeIs('client.index.aceitos')) active-page  @endif">
+                <a style="color:var(--bs-info)" href="{{ route('client.index.aceitos') }}">
+                    <i style="filter:none" class="material-icons">inventory</i> Aceitos
                 </a>
             </li>
 
-            <li class="{{ request()->is('submissoes/pagas') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('submissoes/pagas') ? 'active-page' : '' }} text-success" href="{{route("client.index.pagas")}}">
-                    <i class="material-icons-two-tone text-success">payments</i> Pagas
+            <li class="@if(routeIs('client.index.recusados')) active-page @endif">
+                <a style="color:var(--bs-danger)" href="{{ route('client.index.recusados') }}">
+                    <i style="filter:none" class="material-icons ">content_paste_off</i> Recusados
                 </a>
             </li>
 
-            <li class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }}">
-                <a class="{{ request()->is('submissoes/cancelados') ? 'active-page' : '' }} text-danger" href="{{route("client.index.cancelados")}}">
-                    <i class="material-icons-two-tone text-danger">cancel</i> Canceladas
+            <li class="@if(routeIs('client.index.pagamento_pendentes')) active-page @endif">
+                <a style="color:var(--bs-pink)" href="{{ route('client.index.pagamento_pendentes') }}">
+                    <i style="filter:none" class="material-icons ">currency_exchange</i> Pagamento Pendentes
+                </a>
+            </li>
+
+            <li class="@if(routeIs('client.index.pagas')) active-page @endif">
+                <a style="color:var(--bs-success)" href="{{ route('client.index.pagas') }}">
+                    <i style="filter:none" class="material-icons ">paid</i> Pagos
+                </a>
+            </li>
+
+            <li class="@if(routeIs('client.index.cancelados')) active-page @endif">
+                <a style="color:var(--bs-gray)" href="{{ route('client.index.cancelados') }}">
+                    <i style="filter:none" class="material-icons ">cancel</i> Cancelados
                 </a>
             </li>
 
             <li class="sidebar-title">
                 Sistema
             </li>
-
 
             <li class="{{ request()->is('perfil') ? 'active-page' : '' }}">
                 <a class="{{ request()->is('perfil') ? 'active' : '' }}" href="#">
@@ -78,3 +94,19 @@
         </ul>
     </div>
 </div>
+
+
+@php
+
+
+    function routeIs(){
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            if (Route::is($arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+@endphp
