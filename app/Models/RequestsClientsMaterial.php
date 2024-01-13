@@ -13,7 +13,7 @@ class RequestsClientsMaterial extends Model
     protected $table = "requests_clients_article";
 
     public function clients(){
-        return $this->hasOne(RequestsClients::class , "id" , "client");
+        return $this->hasOne(RequestsClients::class , "id" , "client")->with("submission")->with("status")->with("address");
     }
 
     public function submissions(){
@@ -30,5 +30,9 @@ class RequestsClientsMaterial extends Model
 
     public function file_all_version(){
         return $this->hasMany(RequestsClientsFiles::class , "clients" , "client")->with('users')->orderBy('created_at', 'DESC');
+    }
+
+    public function status(){
+        return $this->hasOne(RequestClientsStatus::class , "id" , "article");
     }
 }

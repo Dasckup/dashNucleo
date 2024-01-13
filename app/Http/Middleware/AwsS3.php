@@ -2,6 +2,7 @@
 namespace App\Http\Middleware;
 use Aws\S3\S3Client;
 use Aws\Credentials\Credentials;
+use Aws\S3\Exception\S3Exception;
 
 class AwsS3{
     private $s3;
@@ -24,19 +25,49 @@ class AwsS3{
         }
     }
 
-    public function publish($filename, $content){
+    public function publish($filename, $file){
+
         try {
-            $bucket = "clients-revi-nc-apply-articles";
-            $key = date("Y/m").'/'.$filename;
-            $this->s3->putObject([
-                'Bucket' => $bucket,
-                'Key' => $key,
-                'Body' => $content,
+            $bucket = 'clients-revi-nc-apply-articles';
+            $region = 'us-east-2';
+
+            $s3 = new S3Client([
+                'version' => 'latest',
+                'region' => $region,
+                'credentials' => [
+                    'key'    => 'AKIAQOM5IBHQNOHEFOX5',
+                    'secret' => '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',
+                ],
             ]);
-            return "https://{$bucket}.s3.amazonaws.com/{$key}";
-        }catch (\Exception $exception){
-            return $exception->getMessage();
-        }
+
+            $result = $s3->listObjects([
+                'Bucket' => $bucket
+            ]);
+
+            if(isset($file) && $file->isValid()){
+                $tempFilePath = $file->path();
+
+                $key = date("Y/m") . '/' . $filename;
+
+                $result = $s3->putObject([
+                    'Bucket' => $bucket,
+                    'Key'    => $key,
+                    'Body'   => fopen($tempFilePath, 'rb'),
+                ]);
+
+                if ($result['@metadata']['statusCode'] === 200) {
+                    return "https://{$bucket}.s3.amazonaws.com/{$key}";
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+
+
+            } catch (S3Exception $e) {
+                return null;
+            }
     }
 
     static public function getFile($objUrl){

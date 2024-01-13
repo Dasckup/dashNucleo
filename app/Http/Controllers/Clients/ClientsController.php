@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Clients;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AwsS3;
 use App\Http\Middleware\Cryptography;
 use App\Models\Alog;
 use App\Models\RequestClientsStatus;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\ZapBoss;
 use App\Models\ClientsFromAutoSave;
 use App\Models\ContactClientsFromAutoSave;
+use App\Models\RequestsClientsFiles;
+use App\Models\RequestsClientsMaterial;
 use App\Models\User;
 
 class ClientsController extends Controller
@@ -159,23 +162,71 @@ class ClientsController extends Controller
             return redirect()->route("login.index");
         }
 
-        $client = RequestsClients::where("id", $id)->with("material")->with("submission")->with("address")->with("status")->first();
+        $material = RequestsClientsMaterial::where("id", $id)->with("file_all_version")->with("clients")->first();
 
-        if(!$client){
+        if(!$material){
             return redirect()->route("client.index")->withErrors(["error" => "Cliente não econtrado e/ou desativado"]);
         }
 
         return view('pages.client.show', [
-            "client" => $client
+            "material" => $material,
+            "client" => $material->clients
         ]);
     }
 
 
 
 
+    public function uploadMaterial(Request $request, $id){
+
+        try{
+            $client = RequestsClients::where("id", $id)->first();
+
+            if(!$client){
+                throw new \Exception("Cliente não encontrado");
+            }
+
+            $user = User::where("id", $request['user'])->first();
+
+            $awsS3 = new AwsS3();
+            $url = $awsS3->publish($request['name'].".".$request['type'], $request['file']);
+
+            $lastFile = RequestsClientsFiles::where("clients", $client->id)->orderBy("created_at", "DESC")->first();
+
+            $material = new RequestsClientsFiles();
+            $material->user = $user->id;
+            $material->article = $request['article'];
+            $material->clients = $client->id;
+            $material->url_material = $url;
+            $material->extension = $request['type'];
+            $material->size_material = $request['size'];
+            $material->version = $lastFile ? $lastFile->version + 1 : 0;
+            $material->label = $request['name'].".".$request['type'];
+            $material->save();
+
+            $awsS3 = new AwsS3();
+            $url = $awsS3->getFile($material->url_material);
+
+            return response()->json([
+                'success' => true,
+                'name' => $material->label,
+                'user_name' => $user->name,
+                'url' => $url
+            ]);
+        }catch(\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+    }
+
+
+
 
     public function index_pendente(){
-        $clients = RequestClientsStatus::where("status", "pendente")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pendente")->with("material")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -188,7 +239,7 @@ class ClientsController extends Controller
 
 
     public function index_aceitos(){
-        $clients = RequestClientsStatus::where("status", "aceito")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "aceito")->with("material")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -201,7 +252,8 @@ class ClientsController extends Controller
 
 
     public function index_pagas(){
-        $clients = RequestClientsStatus::where("status", "pago")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pago")->with("material")->orderBy("created_at","DESC")->get();
+
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -214,7 +266,7 @@ class ClientsController extends Controller
 
 
     public function index_recusados(){
-        $clients = RequestClientsStatus::where("status", "recusado")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "recusado")->with("material")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -227,7 +279,7 @@ class ClientsController extends Controller
 
 
     public function index_pagamento_pendentes(){
-        $clients = RequestClientsStatus::where("status", "pagamento_pendente")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pagamento_pendente")->with("material")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -241,7 +293,7 @@ class ClientsController extends Controller
 
 
     public function index_cancelados(){
-        $clients = RequestClientsStatus::where("status", "cancelado")->with("clients")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "cancelado")->with("material")->orderBy("created_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
@@ -251,20 +303,6 @@ class ClientsController extends Controller
             ]
         ]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -498,5 +536,6 @@ Somos da *Revista Científica Multidisciplinar Núcleo Do Conhecimento*, percebe
 
         return $dataAtual;
     }
+
 
 }

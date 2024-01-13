@@ -87,7 +87,7 @@
                                     <tbody>
                                         @foreach($data as $reponse)
                                             <?php
-                                              $client = $reponse->clients;
+                                              $client = $reponse->material->clients;
                                               $name = explode(' ', mb_convert_case($client->name, MB_CASE_TITLE, "UTF-8"))[0];
                                               $email = $client->email != null? $client->email : "Não informado";
                                             ?>
@@ -219,7 +219,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <a href="{{route("client.show", ["id"=>$client->id])}}">VER MAIS</a>
+                                                <a href="{{route("client.show", ["id"=>$reponse->material->id])}}">VER MAIS</a>
                                             </td>
                                         </tr>
                                         @endforeach

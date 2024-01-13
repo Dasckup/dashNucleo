@@ -41,6 +41,7 @@ Route::middleware(['auth:dashboard'])->group(function () {
 
         Route::get('/submissoes/{id}/{status}', 'update')->name("client.update");
         Route::post('/submissoes/update_status/', 'updateStatus')->name("client.update.status");
+        Route::post('/submissoes/{id}/upload/material', 'uploadMaterial')->name("client.upload.material");
 
         Route::get('/submissoes/{id}/', 'show')->name("client.show");
 
