@@ -63,6 +63,13 @@
         margin-bottom: 25px;
     }
 
+    .button-add-note{
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px;
+        margin-bottom: 25px;
+    }
+
     .file-item-title{
         max-width: 340px;
         font-weight: 600!important;
@@ -121,6 +128,12 @@
 
     .text-transform-capitalize{
         text-transform: capitalize!important;
+    }
+
+    .last-note-card{
+        border: 1px solid #e7e7e7;
+        border-radius: 6px;
+        padding: 10px;
     }
 
     </style>
@@ -221,6 +234,10 @@
 
 
     function addFileToDOM(data) {
+
+        const badge = $("#material-badge-count");
+        badge.text(parseInt(badge.text()) + 1);
+
         const html = `
             <div class="card file-card file-manager-recent-item">
                 <div class="p-3">
@@ -333,6 +350,87 @@
 
       fileInfo.appendChild(fileInfoElement);
     }
+
+
+    $("form[name='new-note-message']").on('submit', function (event){
+        event.preventDefault();
+
+        const form = $(this);
+        form.find('button').attr('disabled', true);
+        form.block({
+            message: '<div class="spinner-grow text-primary" role="status"><span class="visually-hidden">Loading...</span><div>',
+        });
+
+        const message = $("#note-message");
+
+        if((message.val()).trim()===""){
+            showCustomToast("danger", {
+                title: "Opss...",
+                message: "Você precisa escrever uma mensagem.",
+            });
+            message.addClass('is-invalid');
+            form.find('button').attr('disabled', false);
+            form.unblock();
+            return;
+        }
+        message.removeClass('is-invalid');
+
+        $.ajax({
+            url: "{{route('client.store.note', ['id' => $material->id])}}",
+            type: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}",
+                user: "{{ Auth::user()->id }}",
+                message: message.val(),
+            },
+            success: function (data) {
+                showCustomToast("success", {
+                    title: "Nota adicionada com sucesso!",
+                    message: "Uhu! Sua nota foi salva com sucesso!",
+                });
+
+                const badge = $("#note-badge-count");
+                badge.text(parseInt(badge.text()) + 1);
+
+                $("#last-note-name").html(data.user.name);
+                $("#last-note-message").html(message.val());
+
+                $("#list-notes").prepend(`
+                    <div style=" border-radius: 6px;border: 1px solid #e7e7e7; padding: 15px;" class="col-sm-6 mb-2">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <img style=" width: 34px; border-radius: 100%; " src="${data.user.cover}" alt="">
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="file-item-title flex-fill">
+                                    ${data.user.name}
+                                </span>
+                                <span style="font-size: 11px;">
+                                    ${message.val()}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2 w-100 d-flex justify-content-end" style="font-size: 11px;color:#666">
+                            ${data.time}
+                        </div>
+                    </div>
+                `);
+
+                form.find('button').attr('disabled', false);
+                form.unblock();
+                $("#note-message").val("");
+            },
+            error: function (response) {
+                showCustomToast("danger", {
+                    title: "Opss...",
+                    message: "Algo deu errado. Tente novamente mais tarde.",
+                });
+
+                form.find('button').attr('disabled', false);
+                form.unblock();
+            }
+        });
+    });
   </script>
 @endsection
 
@@ -358,16 +456,29 @@
                             <div class="w-100 mt-2">
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="basic_information_tab" data-bs-toggle="tab" data-bs-target="#basic_information" type="button" role="tab" aria-controls="basic_information" aria-selected="true">Informações de Contato</button>
+                                        <button class="nav-link active" id="basic_information_tab" data-bs-toggle="tab" data-bs-target="#basic_information" type="button" role="tab" aria-controls="basic_information" aria-selected="true">
+                                            Informações de Contato
+                                        </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="address_tab" data-bs-toggle="tab" data-bs-target="#address" type="button" role="tab" aria-controls="address" aria-selected="false">Endereço</button>
+                                        <button class="nav-link" id="address_tab" data-bs-toggle="tab" data-bs-target="#address" type="button" role="tab" aria-controls="address" aria-selected="false">
+                                            Endereço
+                                        </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="submission_tab" data-bs-toggle="tab" data-bs-target="#submission" type="button" role="tab" aria-controls="submission" aria-selected="false">Submissão</button>
+                                        <button class="nav-link" id="submission_tab" data-bs-toggle="tab" data-bs-target="#submission" type="button" role="tab" aria-controls="submission" aria-selected="false">
+                                            Submissão
+                                        </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="material_tab" data-bs-toggle="tab" data-bs-target="#material" type="button" role="tab" aria-controls="material" aria-selected="false">Material</button>
+                                        <button class="nav-link d-flex align-items-center" id="material_tab" data-bs-toggle="tab" data-bs-target="#material" type="button" role="tab" aria-controls="material" aria-selected="false">
+                                            Material <span id="material-badge-count" class="ms-2 badge badge-style-bordered badge-primary">@if(isset($material->file_all_version)){{count($material->file_all_version)}}@else 0 @endif</span>
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link d-flex align-items-center" id="notes_tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">
+                                            Notas <span id="note-badge-count" class="ms-2 badge badge-style-bordered badge-primary">@if(isset($material->notes)){{count($material->notes)}}@else 0 @endif</span>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
@@ -379,7 +490,30 @@
                         <div class="card-body">
                             <div class="tab-content" id="myTabContent">
 
+                                @php
+                                    $nascimento = \App\Http\Middleware\Cryptography::decrypt($client->document->birthday);
+
+                                    function calcularIdade($dataNascimento) {
+                                        $hoje = new DateTime();
+                                        $nascimento = new DateTime($dataNascimento);
+                                        $idade = $hoje->diff($nascimento)->y;
+                                        return $idade;
+                                    }
+
+                                    function proximoAniversario($dataNascimento) {
+                                        $hoje = new DateTime();
+                                        $nascimento = new DateTime($dataNascimento);
+                                        $nascimento->modify("+" . calcularIdade($dataNascimento) + 1 . " years");
+                                        return $nascimento->format('d/m/Y');
+                                    }
+                                @endphp
+
                                 <div class="tab-pane fade show active" id="basic_information" role="tabpanel" aria-labelledby="basic_information">
+
+                                    @if($client->material->url_photo)
+                                        <img src="{{\App\Http\Middleware\AwsS3::getFile($client->material->url_photo)}}" width="100px" height="100px" style="border-radius: 5px; margin-bottom: 20px;" />
+                                    @endif
+
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-4">
                                             <label class="form-label">Nome</label>
@@ -391,7 +525,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row m-b-xxl">
                                         <div class="col-sm-4">
                                             <label  class="form-label">E-mail</label>
                                             <input readonly type="text" value="{{$client->email}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
@@ -401,6 +535,62 @@
                                             <input readonly type="text" value="{{$client->ddi}} {{$client->cellphone}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
                                         </div>
                                     </div>
+
+                                    <div class="row m-b-xxl">
+                                        <div class="col-sm-2">
+                                            <label class="form-label">Idade</label>
+                                            <input readonly type="text" value="{{calcularIdade($nascimento)}} anos" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label class="form-label">Próximo Aniversário 🎉</label>
+                                            <input readonly type="text" value="{{proximoAniversario($nascimento)}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
+                                        </div>
+                                    </div>
+
+                                    <div class="row ">
+                                        <div class="col-sm-8">
+                                            <label class="form-label">Última nota</label>
+                                            <div class="last-note-card ">
+                                                @if(count($material->notes)>0)
+                                                @php
+                                                    $FirstNote = $material->notes[0];
+                                                @endphp
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="material-symbols-outlined text-primary me-3">
+                                                            note_stack
+                                                        </span>
+                                                        <div class="d-flex flex-column">
+                                                            <span id="last-note-name" class="file-item-title flex-fill">
+                                                                {{$FirstNote->users->name}}
+                                                            </span>
+                                                            <span style="font-size: 11px;">
+                                                                <span id="last-note-message" >
+                                                                    {{$FirstNote->message}}
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="material-symbols-outlined text-primary me-3">
+                                                            note_stack
+                                                        </span>
+                                                        <div class="d-flex flex-column">
+                                                            <span class="file-item-title flex-fill">
+                                                                Nenhuma nota encontrada
+                                                            </span>
+                                                            <span style="font-size: 11px;">
+                                                                <span >
+                                                                    Nenhuma nota encontrada
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address">
@@ -510,7 +700,7 @@
 
                                     <div class="row m-b-xxl">
                                         <div class="col-sm-5">
-                                            <label  class="form-label">Prazo escolhido por {{$client->name}}:</label>
+                                            <label  class="form-label">Prazo selecionado:</label>
                                             <input readonly type="text" value="{{$client->submission->term_publication_title}}" class="form-control bg-transparent" aria-describedby="settingsCurrentPassword" placeholder="">
                                         </div>
                                         <div class="col-sm-3">
@@ -565,6 +755,8 @@
                                     }else{
                                         $groupedData = [];
                                     }
+
+
 
                                 @endphp
 
@@ -699,6 +891,46 @@
 
                                     </div>
                                 </div>
+
+
+                                <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes">
+
+                                    <form name="new-note-message" class="col-sm-6">
+                                        <label class="form-label">Mensagem</label>
+                                        <textarea name="note-message" id="note-message" rows="4" class="form-control mb-2 " placeholder="Escreva aqui..."></textarea>
+                                        <button type="submit" class="btn btn-primary button-add-note">
+                                            Adicionar nota
+                                        </button>
+                                    </form>
+
+                                    @if($material->notes)
+                                        <div id="list-notes" class="d-flex flex-column col-sm-12">
+                                            @foreach ($material->notes as $note)
+                                                <div style=" border-radius: 6px;border: 1px solid #e7e7e7; padding: 15px;" class="col-sm-6 mb-2">
+                                                    <div class="d-flex">
+                                                        <div class="me-3">
+                                                            <img style=" width: 34px; border-radius: 100%; " src="{{$note->users->cover}}" alt="">
+                                                        </div>
+                                                        <div class="d-flex flex-column">
+                                                            <span class="file-item-title flex-fill">
+                                                                {{$note->users->name}}
+                                                            </span>
+                                                            <span style="font-size: 11px;">
+                                                                {{$note->message}}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-2 w-100 d-flex justify-content-end" style="font-size: 11px;color:#666">
+                                                        {{date('d/m/Y \á\s H:i', strtotime($note->created_at))}}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                </div>
+
+
                             </div>
                         </div>
                     </div>

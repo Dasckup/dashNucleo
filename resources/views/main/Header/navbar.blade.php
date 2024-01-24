@@ -44,10 +44,11 @@
                     <li class="nav-item">
                         <a class="nav-link toggle-search" href="#"><i class="material-icons">search</i></a>
                     </li>
-
+                    @can('director')
                     <li class="nav-item">
                         <a class="nav-link ps-0" href="{{route("log")}}"><i class="material-icons">history</i></a>
                     </li>
+                    @endcan
 
                     <li class="nav-item hidden-on-mobile">
                         <a class="nav-link language-dropdown-toggle" href="#" id="languageDropDown" data-bs-toggle="dropdown">
@@ -55,7 +56,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end language-dropdown" aria-labelledby="languageDropDown">
                             <li>
-                                <a class="dropdown-item " href="{{route("user.show")}}" style=" display: flex; align-items: center; ">
+                                <a class="dropdown-item " href="{{route("profile.show")}}" style=" display: flex; align-items: center; ">
                                     <i style="font-size: 22px" class="material-icons me-2">face</i> Configuração
                                 </a>
                             </li>

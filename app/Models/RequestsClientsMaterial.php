@@ -13,7 +13,7 @@ class RequestsClientsMaterial extends Model
     protected $table = "requests_clients_article";
 
     public function clients(){
-        return $this->hasOne(RequestsClients::class , "id" , "client")->with("submission")->with("status")->with("address");
+        return $this->hasOne(RequestsClients::class , "id" , "client")->with("submission")->with("status")->with("address")->with("document");
     }
 
     public function submissions(){
@@ -34,5 +34,13 @@ class RequestsClientsMaterial extends Model
 
     public function status(){
         return $this->hasOne(RequestClientsStatus::class , "id" , "article");
+    }
+
+    public function submission(){
+        return $this->hasOne(RequestsClientsSubmission::class , 'client', 'client');
+    }
+
+    public function notes(){
+        return $this->hasMany(RequestsClientsNotes::class , "article", "id")->orderBy('created_at', 'desc')->with('users');
     }
 }

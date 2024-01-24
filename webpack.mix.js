@@ -61,6 +61,7 @@ mix.
         'resources/assets/plugins/toastfy/toastfy.js',
     ], 'public/template/assets/js/toastfy.js')
 
+
     .scripts([
         'resources/assets/js/main.min.js',
         'resources/assets/js/custom.js',

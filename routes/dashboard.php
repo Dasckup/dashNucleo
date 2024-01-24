@@ -7,9 +7,12 @@ use App\Http\Controllers\Login\LoginController as Login;
 use App\Http\Controllers\User\UserController as Users;
 use App\Http\Controllers\Clients\AutoSaveController as AutoSave;
 use App\Http\Controllers\Events\EventsController as Events;
+use App\Http\Controllers\Products\ProductsController as Products;
 use Illuminate\Support\Facades\DB;
 use App\Models\ClientsFromAutoSave;
-
+use App\Models\RequestClientsStatus;
+use App\Models\RequestsClients;
+use App\Models\RequestsClientsMaterial;
 
 Route::controller(Login::class)->group(function (){
     Route::get('/login', 'index')->name("login.index");
@@ -23,11 +26,17 @@ Route::middleware(['auth:dashboard'])->group(function () {
     Route::get('/log', [Alog::class, 'index'])->name("log");
 
 
+
+    // ONLY ADMIN
     Route::controller(Clients::class)->group(function () {
         Route::get('/submissoes', 'index')->name("client.index");
 
+        Route::post('/submissoes/consult/term', 'consult_term')->name("client.consult.term");
+
         $routsStatus = [
             'pendente',
+            'atendidos',
+            'pendencias',
             'aceitos',
             'pagas',
             'recusados',
@@ -39,11 +48,16 @@ Route::middleware(['auth:dashboard'])->group(function () {
             Route::get('/submissoes/'.$status, 'index_'.$status)->name("client.index.".$status);
         }
 
+        Route::post('/submissoes/get/count/all', 'getAllSubmissions')->name("client.count.all");
+
         Route::get('/submissoes/{id}/{status}', 'update')->name("client.update");
         Route::post('/submissoes/update_status/', 'updateStatus')->name("client.update.status");
+        Route::post('/submissoes/update/submission/term', 'updateSubmissionTerm')->name("client.update.submission");
+
         Route::post('/submissoes/{id}/upload/material', 'uploadMaterial')->name("client.upload.material");
 
         Route::get('/submissoes/{id}/', 'show')->name("client.show");
+        Route::post('/submissoes/article/{id}/new/note', 'store_note')->name("client.store.note");
 
         Route::get('/submissoes/form/send/whatsapp', 'send_message_to_client')->name("client.whatsapp");
         Route::post('/submissoes/form/send/whatsapp/api', 'send_message_to_client_api')->name("client.whatsapp.api");
@@ -56,7 +70,6 @@ Route::middleware(['auth:dashboard'])->group(function () {
         Route::get('/eventos/start/{event}', 'start')->name("events.start");
         Route::get('/eventos/editar/{event}', 'show')->name("events.show");
         Route::put('/eventos/salvar/{event}', 'update')->name("events.update");
-
     });
 
     Route::controller(AutoSave::class)->group(function (){
@@ -70,8 +83,20 @@ Route::middleware(['auth:dashboard'])->group(function () {
     });
 
     Route::controller(Users::class)->group(function (){
-        Route::get('/perfil', 'show')->name("user.show");
-        Route::post('/perfil/atualizar', 'update')->name("user.update");
+        Route::get('/usuarios', 'index')->name("user.index")->middleware(['can.any:director,admin']);
+        Route::post('/usuarios/novo', 'store')->name("user.store")->middleware(['can.any:director,admin']);
+        Route::get('/usuarios/{id}', 'show')->name("user.show")->middleware(['can.any:director,admin']);
+
+        Route::get('/perfil', 'profile')->name("profile.show");
+        Route::post('/perfil/atualizar', 'update')->name("profile.update");
+    });
+
+    Route::controller(Products::class)->group(function () {
+        Route::get('/produtos/todos', 'index')->name("products.index");
+        Route::get('/produtos/novo', 'create')->name("products.create");
+        Route::post('/produtos/novo', 'store')->name("products.store");
+        Route::get('/produtos/editar/{product}', 'edit')->name("products.edit");
+        Route::put('/produtos/editar/{product}', 'update')->name("products.update");
     });
 
 });
@@ -86,3 +111,5 @@ Route::controller(Clients::class)->group(function () {
 Route::controller(Events::class)->group(function () {
     Route::get('/eventos/submit/', 'submit')->name("events.submit");
 });
+
+

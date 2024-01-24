@@ -24,4 +24,8 @@ class RequestsClients extends Model
     public function material(){
         return $this->hasOne(RequestsClientsMaterial::class, 'client', 'id')->with('file_last_version')->with('file_all_version');
     }
+
+    public function document(){
+        return $this->hasOne(RequestsClientsDocuments::class, 'client', 'id');
+    }
 }

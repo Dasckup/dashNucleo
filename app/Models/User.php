@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'last_activity'
     ];
 
     /**
@@ -37,4 +37,30 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function permissions(){
+        return $this->belongsToMany(Permission::class);
+    }
+
+    public function hasPermission($permission){
+        return $this->permissions->where("name", $permission)->isNotEmpty();
+    }
+
+    public function assignPermission($permissionName){
+        $permission = Permission::where("name", $permissionName)->first();
+        if ($permission) {
+            return $this->permissions()->attach($permission->id);
+        }
+        return false;
+    }
+
+
+    public function removePermission($permission){
+        return $this->permissions()->detach($permission);
+    }
+
+    public function updateActivity(){
+        return $this->update(['last_activity' => now()]);
+    }
 }

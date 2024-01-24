@@ -13,8 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\ZapBoss;
 use App\Models\ClientsFromAutoSave;
 use App\Models\ContactClientsFromAutoSave;
+use App\Models\Products;
+use App\Models\ProductsPrice;
 use App\Models\RequestsClientsFiles;
 use App\Models\RequestsClientsMaterial;
+use App\Models\RequestsClientsNotes;
+use App\Models\RequestsClientsSubmission;
 use App\Models\User;
 
 class ClientsController extends Controller
@@ -92,7 +96,7 @@ class ClientsController extends Controller
 
     public function updateStatus(Request $request){
         $user = User::where('id', $request["user"])->first();
-        $client = RequestClientsStatus::where("client", $request["id"])->first();
+        $client = RequestClientsStatus::where("article", $request["id"])->first();
         $status = $request["status"];
 
 
@@ -114,24 +118,34 @@ class ClientsController extends Controller
                 'color' => 'success',
                 'title' => 'pago',
             ],
-            'cancelados' => [
+            'recusado' => [
                 'color' => 'danger',
-                'title' => 'cancelado',
+                'title' => 'recusado',
             ],
-            'pagamento_pendentes' => [
+            'pagamento_pendente' => [
                 'color' => 'pink',
-                'title' => 'pagamento_pendente',
+                'title' => 'pagamento pendente',
             ],
-            'cancelados' => [
+            'cancelado' => [
                 'color' => 'gray',
                 'title' => 'cancelado',
             ],
+            'atendido' => [
+                'color' => 'primary',
+                'title' => 'atendido',
+            ],
+            'pendencias' => [
+                'color' => 'red-light',
+                'title' => 'pendências',
+            ],
         ];
+
+
 
         $statusKey = $status;
         if (array_key_exists($statusKey, $statusData)) {
             $status = [
-                'status' => $statusKey,
+                'status' => $statusData[$statusKey]['title'],
                 'bs' => $statusData[$statusKey]['color'],
             ];
         } else {
@@ -143,7 +157,7 @@ class ClientsController extends Controller
 
         $saveInLog = new Alog();
         $saveInLog->user = $user->id;
-        $saveInLog->message = "Alterou o status do cliente [#".$client->id."] de: ".$client->status." para: ".$status["status"];
+        $saveInLog->message = "Alterou o status da submissão [#".$client->article."] de: ".$client->status." para: ".$status["status"];
         $saveInLog->ip = $_SERVER['REMOTE_ADDR'];
         $saveInLog->save();
 
@@ -162,7 +176,7 @@ class ClientsController extends Controller
             return redirect()->route("login.index");
         }
 
-        $material = RequestsClientsMaterial::where("id", $id)->with("file_all_version")->with("clients")->first();
+        $material = RequestsClientsMaterial::where("id", $id)->with("file_all_version")->with("notes")->with("clients")->first();
 
         if(!$material){
             return redirect()->route("client.index")->withErrors(["error" => "Cliente não econtrado e/ou desativado"]);
@@ -219,19 +233,18 @@ class ClientsController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
-
     }
 
 
 
 
     public function index_pendente(){
-        $clients = RequestClientsStatus::where("status", "pendente")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pendente")->with("material")->orderBy("updated_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Pendentes",
+                "title" => "pendentes",
                 "bg" => "warning"
             ]
         ]);
@@ -239,26 +252,38 @@ class ClientsController extends Controller
 
 
     public function index_aceitos(){
-        $clients = RequestClientsStatus::where("status", "aceito")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "aceito")->with("material")->orderBy("updated_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Aceitas",
+                "title" => "aceitas",
                 "bg" => "info"
+            ]
+        ]);
+    }
+
+    public function index_atendidos(){
+        $clients = RequestClientsStatus::where("status", "atendido")->with("material")->orderBy("updated_at","DESC")->get();
+
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "em atendimento",
+                "bg" => "primary"
             ]
         ]);
     }
 
 
     public function index_pagas(){
-        $clients = RequestClientsStatus::where("status", "pago")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pago")->with("material")->orderBy("updated_at","DESC")->get();
 
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "pago",
+                "title" => "pagas",
                 "bg" => "success"
             ]
         ]);
@@ -266,12 +291,12 @@ class ClientsController extends Controller
 
 
     public function index_recusados(){
-        $clients = RequestClientsStatus::where("status", "recusado")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "recusado")->with("material")->orderBy("updated_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Recusadas",
+                "title" => "recusadas",
                 "bg" => "danger"
             ]
         ]);
@@ -279,12 +304,12 @@ class ClientsController extends Controller
 
 
     public function index_pagamento_pendentes(){
-        $clients = RequestClientsStatus::where("status", "pagamento_pendente")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "pagamento pendente")->with("material")->orderBy("updated_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Com Pagamento Pendente",
+                "title" => "com pagamento pendente",
                 "bg" => "pink"
             ]
         ]);
@@ -293,22 +318,28 @@ class ClientsController extends Controller
 
 
     public function index_cancelados(){
-        $clients = RequestClientsStatus::where("status", "cancelado")->with("material")->orderBy("created_at","DESC")->get();
+        $clients = RequestClientsStatus::where("status", "cancelado")->with("material")->orderBy("updated_at","DESC")->get();
 
         return view('pages.client.index' , [
             "data" => $clients,
             "status" => [
-                "title" => "Cancelados",
+                "title" => "canceladas",
                 "bg" => "gray"
             ]
         ]);
     }
 
+    public function index_pendencias(){
+        $clients = RequestClientsStatus::where("status", "pendencias")->with("material")->orderBy("updated_at","DESC")->get();
 
-
-
-
-
+        return view('pages.client.index' , [
+            "data" => $clients,
+            "status" => [
+                "title" => "com Pendencias",
+                "bg" => "red-light"
+            ]
+        ]);
+    }
 
 
 
@@ -368,22 +399,6 @@ class ClientsController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function sendMessageToNewClientSecondTime(){
         $inicioDoisDiasAtras = date('Y-m-d 00:00:00', strtotime('-2 days'));
         $fimDoisDiasAtras = date('Y-m-d 23:59:59', strtotime('-2 days'));
@@ -427,16 +442,41 @@ class ClientsController extends Controller
 
 
 
+    public function getAllSubmissions(){
+        try{
+            $routsStatus = [
+                'pendente',
+                'aceito',
+                'atendido',
+                'pago',
+                'recusado',
+                'pagamento pendente',
+                'cancelado',
+                'pendencias'
+            ];
 
+            $data = [];
 
+            foreach ($routsStatus as $status) {
+                $count = RequestClientsStatus::where('status', $status)->count();
+                $data[$status] = $count;
+            }
 
+            $data['intention'] = ClientsFromAutoSave::count();
+            $data['products'] = Products::count();
+            $data['users'] = User::count();
 
-
-
-
-
-
-
+            return response()->json([
+                'success' => true,
+                'submissions' => $data
+            ]);
+        }catch(\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
 
 
@@ -538,4 +578,169 @@ Somos da *Revista Científica Multidisciplinar Núcleo Do Conhecimento*, percebe
     }
 
 
+
+    public function consult_term(Request $request){
+
+        $client = RequestsClientsMaterial::where("id", $request["id"])->with('submission')->with('clients')->first();
+
+        if(!$client){
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+
+        if(!$client->submission->term_publication_title){
+            return response()->json([
+                'success' => true,
+                'client' => [
+                    'name' => $client->clients->name,
+                    'term' => false,
+                ]
+            ]);
+        }else{
+            return response()->json([
+                'success' => true,
+                'client' => [
+                    'name' => $client->clients->name,
+                    'term' => true,
+                ]
+            ]);
+        }
+    }
+
+    public function updateSubmissionTerm(Request $request){
+
+        try{
+
+            $client = RequestsClientsMaterial::where("id", $request["id"])->first();
+            //$user = User::where('id', $request["user"])->first();
+
+            if(!$client){
+                throw new \Exception("Cliente não encontrado");
+            }
+
+            $product = $this->getProduct($request["term"], $request["currency"]);
+
+            $submission = RequestsClientsSubmission::where("client", $client->client)->first();
+            $submission->term_publication_title = $product["title"]; // Linha do erro
+            $submission->term_publication_price = $product["price"];
+            $submission->save();
+
+            $status = $request["status"];
+
+            $statusData = [
+                'pendente' => [
+                    'color' => 'warning',
+                    'title' => 'pendente',
+                ],
+                'aceito' => [
+                    'color' => 'info',
+                    'title' => 'aceito',
+                ],
+                'pago' => [
+                    'color' => 'success',
+                    'title' => 'pago',
+                ],
+                'recusado' => [
+                    'color' => 'danger',
+                    'title' => 'recusado',
+                ],
+                'pagamento_pendente' => [
+                    'color' => 'pink',
+                    'title' => 'pagamento pendente',
+                ],
+                'cancelado' => [
+                    'color' => 'gray',
+                    'title' => 'cancelado',
+                ],
+                'atendido' => [
+                    'color' => 'primary',
+                    'title' => 'atendido',
+                ],
+                'pendencias' => [
+                    'color' => 'red-light',
+                    'title' => 'pendências',
+                ]
+            ];
+
+
+            $statusKey = $status;
+            if (array_key_exists($statusKey, $statusData)) {
+                $status = [
+                    'status' => $statusData[$statusKey]['title'],
+                    'bs' => $statusData[$statusKey]['color'],
+                ];
+            } else {
+                $status = [
+                    'status' => 'pendente',
+                    'bs' => 'warning',
+                ];
+            }
+
+            $client = RequestClientsStatus::where("article", $client->id)->first();
+            $client->status = $status["status"];
+            $client->bs = $status["bs"];
+            $client->save();
+
+            return response()->json([
+                'success' => true,
+                'status' => $status["status"]
+            ]);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'line' => $e->getLine(),
+                ]
+            ]);
+        }
+
+    }
+
+    private function getProduct($id, $currency = "BRL"){
+        $product = Products::where("id", $id)->first();
+        $currency = ProductsPrice::where("product", $product->id)->where("currency", $currency)->first();
+
+        return [
+            "title" => $product->title ?? NULL,
+            "price" => $currency->price." ".$currency->currency ?? NULL,
+        ];
+    }
+
+    public function store_note(Request $request, $id){
+
+        try{
+            $article = RequestsClientsMaterial::where("id", $id)->first();
+            $user = User::where('id', $request["user"])->first();
+
+            if(!$article || !$user){
+                throw new \Exception("Cliente não encontrado");
+            }
+
+            $note = new RequestsClientsNotes();
+            $note->client = $article->client;
+            $note->user = $user->id;
+            $note->article = $article->id;
+            $note->message = $request["message"];
+            $note->save();
+
+            return response()->json([
+                'success' => true,
+                'user' => [
+                    'name' => $user->name,
+                    'cover' => $user->cover
+                ],
+                'message' => $request["message"],
+                'time' => date('d/m/Y \á\s H:i')
+            ]);
+        }catch(\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+    }
 }
